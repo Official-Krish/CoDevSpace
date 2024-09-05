@@ -2,8 +2,11 @@ import express from 'express';
 import { createClient } from 'redis';
 import { WebSocketServer } from 'ws';
 import { RoomManager } from './utils/roomManager';
+import cors from 'cors';
 
 const app = express();
+app.use(express.json());
+app.use(cors());
 
 const server = app.listen(3000, () => {
   console.log('Server is running on http://localhost:3000');
@@ -65,8 +68,8 @@ wss.on('connection', (ws) => {
     }));
 })
 
-app.post("/create", (req, res) => {
-    const { username, roomName, roomId } = req.body;
+app.post("/create", (req , res ) => {
+    const { username , roomName, roomId } = req.body;
 
     if(!username || !roomName || !roomId){
         res.status(400).send("Invalid request");
