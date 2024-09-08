@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import axios from "axios";
 import { createClient } from "redis";
 
@@ -36,9 +39,9 @@ async function processSubmission(submission : string){
             //still processing
             result = await pollJudge0Result(result.token, judge0Key);
         }
-
+        
         await redisClient.publish(roomId, JSON.stringify(result));
-        console.log(`Published result to room: ${roomId}`);
+
     } catch (error) {
         console.error(`Error processing submission for room: ${roomId}`, error);
     }
@@ -99,7 +102,7 @@ async function worker() {
         console.log("Worker connected to Redis");
 
         while(true){
-            const data  = await redisClient.brPop("code-execution", 0); // 0 means wait indefinitely
+            const data  = await redisClient.brPop("submissions", 0); // 0 means wait indefinitely
 
             if(data){
                 await processSubmission(data.element);
@@ -110,4 +113,4 @@ async function worker() {
     }
 }
 
-worker();
+worker().catch(console.error);
