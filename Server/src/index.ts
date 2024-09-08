@@ -30,45 +30,37 @@ redisClientSubscribing.connect().catch(err => {
     process.exit(1);
 });
 
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({ server: server });
 
-wss.on('connection', (ws) => {
-    console.log('Client connected');
-    
-    ws.on("mesasge", (data, isBinary) => {
-        const message = JSON.parse(data.toString());
+wss.on('connection', function connection(ws) {
+  ws.on('error', console.error);
 
-        if(message.Title === "User-joined"){
-            RoomManager.getInstance().handleUserJoined(message, ws);
-        }
+  ws.on('message', function message(data, isBinary) {
+    const message = JSON.parse(data.toString());
+    if(message.Title==="User-joined"){
+      RoomManager.getInstance().handleUserJoined(message, ws);
+    }
+    else if(message.Title==="User-left"){
+      RoomManager.getInstance().handleUserLeft(message)
+    }
+    else if(message.Title==="New-chat"){
+      RoomManager.getInstance().handleNewChat(message)
+    }
+    else if(message.Title==="lang-change"){
+      RoomManager.getInstance().handleLangChange(message)
+    }
+    else if(message.Title==="Code-change"){
+      RoomManager.getInstance().handleCodeChange(message)
+    }
+    else if(message.Title==="Submitted"){
+      RoomManager.getInstance().handleSubmitted(message)
+    }
+  });
 
-        if(message.Title === "Lang-change"){
-            RoomManager.getInstance().handleLangChange(message);
-        }
+  ws.send(JSON.stringify({Title : "Greet" , msg:'Hello! Message From Server!!'}));
+});
 
-        if(message.Title === "Code-change"){
-            RoomManager.getInstance().handleCodeChange(message);
-        }
-
-        if(message.Title === "Submitted"){
-            RoomManager.getInstance().handleSubmitted(message);
-        }
-
-        if(message.Title === "User-left"){
-            RoomManager.getInstance().handleUserLeft(message);
-        }
-
-        if(message.Title === "New-chat"){
-            RoomManager.getInstance().handleNewChat(message);
-        }
-    });
-    ws.send(JSON.stringify({
-        Title : "Connected",
-        msg : "Hello! You are connected to the server"
-    }));
-})
-
-app.post("/create", (req , res ) => {
+app.post("/api/create", (req , res ) => {
     const { username , roomName, roomId } = req.body;
 
     if(!username || !roomName || !roomId){
@@ -79,6 +71,7 @@ app.post("/create", (req , res ) => {
     try{
         RoomManager.getInstance().create(req.body);
         res.status(200).send("Room created");
+        console.log("Room created");
     } catch(e){
         res.status(500).send("Error creating room");
     }

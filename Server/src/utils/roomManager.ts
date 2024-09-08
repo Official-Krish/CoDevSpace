@@ -1,265 +1,273 @@
-import { createClient } from "redis";
-import { WebSocket } from "ws";
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+import { WebSocket } from 'ws'
 
 interface room {
-    name : string;
-    roomId : string;
-    users : Array<{
-        username : string;
-        ws : WebSocket;
-    }>;
-
-    code : string;
-    chats : Array<{
-        username : string;
-        message : string;
-    }>;
-    language : string;
-    result : string;
+    name: string,
+    roomId: string,
+    users: Array<{
+      username: string,
+      ws: WebSocket
+    }>,
+    code: string,
+    chats: Array<{
+      username: string,
+      message: string
+    }>,
+    language: string,
+    result: string
 }
 
+import { createClient } from 'redis'
 
 export class RoomManager {
     private static instance : RoomManager;
     private rooms : room[] = [];
 
-    private constructor() {}
+    private constructor(){
 
+    }
 
-    public static getInstance() : RoomManager {
-        if(!RoomManager.instance){
+    public static getInstance(): RoomManager {
+        if (!RoomManager.instance) {
             RoomManager.instance = new RoomManager();
         }
         return RoomManager.instance;
     }
 
-    create(roomData : any){
-        const {username, roomName, roomId} = roomData;
+    public create(roomData : any){
 
-        const newRoom : room = {
-            name : roomName,
-            roomId,
-            users : [],
-            code : "",
-            chats : [],
-            language : "C++",
-            result : ""
-        }
+        const {username, roomName, roomId} = roomData
 
-        this.rooms.push(newRoom);
+        const newRoom: room = {
+            name: roomName,
+            roomId: roomId,
+            users: [],
+            code: "",
+            chats: [],
+            language: "",
+            result: ""
+        };
+        
+        this.rooms.push(newRoom)
+    
     }
 
-    handleUserJoined(message : any, ws : WebSocket){
-        const {username, roomId} = message;
+    public handleUserJoined(message:any, ws : WebSocket) {
+      let { roomId, username } = message;
+      // Find the room based on roomId
+      roomId = Array.isArray(roomId) ? roomId[0] : roomId;
 
-        const room = this.rooms.find(room => room.roomId === roomId);
-
-        if(!room){
-            const notFoundMessage = JSON.stringify({
-                Title : "Room-not-found",
-            });
-            ws.send(notFoundMessage);
-            return;
-        }
-
-        const existingUserIndex = room.users.findIndex(user => user.username === username);
-
-        if (existingUserIndex !== -1){
-            room.users[existingUserIndex].ws = ws;
-
-            const roomInfoMessage = JSON.stringify({
-                Title : "Room-info",
-                roomId : room.roomId,
-                roomName : room.name,
-                users : room.users.map(user => user.username),
-                code : room.code,
-                chats : room.chats,
-                language : room.language,
-                result : room.result
-            });
-            ws.send(roomInfoMessage);
-            return;
-        }
-
-        room.users.push({ username, ws });
-
-        const newuserJoinedMessage = JSON.stringify({
-            Title : "New_User",
-            username
-        });
-
-        room.users.forEach(user => {
-            if (user.ws !== ws && user.ws.readyState === WebSocket.OPEN) {
-              user.ws.send(newuserJoinedMessage);
-            }
-        });
-
+      const room = this.rooms.find(room => room.roomId === roomId);
+      if (!room) {
+        const notFoundMessage = JSON.stringify({
+          Title : "Not-found"
+        })
+        ws.send(notFoundMessage)
+        return;
+      }
+    
+    
+      // Check if the user is already in the room
+      const existingUserIndex = room.users.findIndex(user => user.username === username);
+      if (existingUserIndex !== -1) {
+        // Update the existing user's WebSocket connection
+        room.users[existingUserIndex].ws = ws;
+    
+        // Send room info to the existing user
         const roomInfoMessage = JSON.stringify({
-            Title : "Room-info",
-            roomId : room.roomId,
-            roomName : room.name,
-            users : room.users.map(user => user.username),
-            code : room.code,
-            chats : room.chats,
-            language : room.language,
-            result : room.result
+          Title: "Room-Info",
+          roomId,
+          roomName: room.name,
+          users: room.users.map(user => user.username),
+          code: room.code,
+          chats: room.chats,
+          language: room.language,
+          result: room.result
         });
-
         ws.send(roomInfoMessage);
+        return;
+      }
+    
+      // Add the user to the room
+      room.users.push({ username, ws });
+    
+      // Send a message to all other users in the room about the new user
+      const newUserMessage = JSON.stringify({
+        Title: "New-User",
+        username
+      });
+    
+      room.users.forEach(user => {
+        if (user.ws !== ws && user.ws.readyState === WebSocket.OPEN) {
+          user.ws.send(newUserMessage);
+        }
+      });
+    
+      // Send room info to the newly joined user
+      const roomInfoMessage = JSON.stringify({
+        Title: "Room-Info",
+        roomId,
+        roomName: room.name,
+        users: room.users.map(user => user.username),
+        code: room.code,
+        chats: room.chats,
+        language: room.language,
+        result: room.result
+      });
+      ws.send(roomInfoMessage);
     }
 
 
-    handleUserLeft(message : any){
-        const { username, roomId } = message;
-
-        const room = this.rooms.find(room => room.roomId === roomId);
-
-        if(!room){
-            return;
+    public handleUserLeft(message: any) {
+      const { roomId, username } = message;
+    
+      // Find the room based on roomId
+      const room = this.rooms.find(room => room.roomId === roomId);
+      if (!room) {
+        return;
+      }
+    
+      // Remove the user from the room
+      room.users = room.users.filter(user => user.username !== username);
+    
+      // Notify remaining users in the room
+      const userLeftMessage = JSON.stringify({
+        Title: "User-left",
+        username,
+        users: room.users.map(user => user.username)
+      });
+    
+      room.users.forEach(user => {
+        if (user.ws.readyState === WebSocket.OPEN) {
+          user.ws.send(userLeftMessage);
         }
-
-        room.users = room.users.filter(user => user.username !== username);
-
-        const userLeftMessage = JSON.stringify({
-            Title : "User-left",
-            username,
-            user: room.users.map(user => user.username)
-        });
-
-        room.users.forEach(user => {
-            if(user.ws.readyState === WebSocket.OPEN){
-                user.ws.send(userLeftMessage);
-            }
-        });
+      });
     }
 
-    handleNewChat(message : any){
-        const { roomId, username, chat} = message;
-
-        const room = this.rooms.find(room => room.roomId === roomId);
-        if(!room){
-            return;
+    public handleNewChat(message:any){
+      const {roomId, username, chat} = message
+      const room = this.rooms.find(room => room.roomId === roomId);
+      if (!room) {
+        return;
+      }
+      room.chats.push({username,message:chat})
+      const newChatMessage = JSON.stringify({
+        Title: "New-chat",
+        username,
+        chat
+      })
+      room.users.forEach(user => {
+        if (user.ws.readyState === WebSocket.OPEN) {
+          user.ws.send(newChatMessage);
         }
-
-        room.chats.push({ username, message : chat });
-
-        const newChatMessage = JSON.stringify({
-            Title : "New-chat",
-            username,
-            message : chat
-        });
-
-        room.users.forEach(user => {
-            if(user.ws.readyState === WebSocket.OPEN){
-                user.ws.send(newChatMessage);
-            }
-        });
+      });
     }
 
-    handleLangChange(message : any){
-        const { roomId, lang } = message;
-
-        const room = this.rooms.find(room => room.roomId === roomId);
-        if(!room){
-            return;
+    public handleLangChange(message:any){
+      const { roomId, lang } = message
+      const room = this.rooms.find(room => room.roomId === roomId);
+      if (!room) {
+        return;
+      }
+      room.language = lang;
+      const langChangeMessage = {
+        Title:"lang-change",
+        lang
+      }
+      room.users.forEach(user => {
+        if (user.ws.readyState === WebSocket.OPEN) {
+          user.ws.send(JSON.stringify(langChangeMessage));
         }
-
-        room.language = lang;
-
-        const langChangeMessage = JSON.stringify({
-            Title : "Lang-change",
-            lang
-        });
-
-        room.users.forEach(user => {
-            if(user.ws.readyState === WebSocket.OPEN){
-                user.ws.send(langChangeMessage);
-            }
-        });
+      });
     }
 
-    handleCodeChange(message : any){
-        const { roomId, code } = message;
-
-        const room = this.rooms.find(room => room.roomId === roomId);
-        if(!room){
-            return;
+    public handleCodeChange(message:any){
+      const { roomId, code } = message
+      const room = this.rooms.find(room => room.roomId === roomId);
+      if (!room) {
+        return;
+      }
+      room.code=code
+      const CodeChangeMessage = {
+        Title:"Code-change",
+        code
+      }
+      room.users.forEach(user => {
+        if (user.ws.readyState === WebSocket.OPEN) {
+          user.ws.send(JSON.stringify(CodeChangeMessage));
         }
-
-        room.code = code;
-
-        const codeChangeMessage = JSON.stringify({
-            Title : "Code-change",
-            code
-        });
-
-        room.users.forEach(user => {
-            if(user.ws.readyState === WebSocket.OPEN){
-                user.ws.send(codeChangeMessage);
-            }
-        });
+      });
     }
 
-    async handleSubmitted( message : any){
-        const REDIS_URL = process.env.REDIS_URL;
+    public async handleSubmitted(message:any) {
+      const redis_url = process.env.REDIS_URL;
 
-        const redisClient = createClient({
-            url: REDIS_URL
-        });
+      const redisClient = createClient({
+        url: redis_url
+      });
 
-        const redisClientSubscribing = createClient({
-            url: REDIS_URL
-        });
+      const redisClientSubscribing = createClient({
+        url: redis_url
+      });
 
-        redisClient.connect().catch(err => {
-            console.log(err);
-            process.exit(1);
-        })
 
-        redisClientSubscribing.connect().catch(err => {
-            console.log(err);
-            process.exit(1);
-        });
-
-        const { roomId } = message;
+      redisClient.connect().catch(err=>{console.log(err)})
+      redisClientSubscribing.connect().catch(err=>{console.log(err)})
+        const {roomId} = message
         const room = this.rooms.find(room => room.roomId === roomId);
-
-        if(!room){
-            return;
+        if (!room) {
+          return;
         }
-
-        const SubmitClickedMessage = JSON.stringify({
-            Title : "Submit-Clicked"
-        });
-
+        const SubmitClickedMessage = {
+          Title:"Submit-clicked"
+        }
+      
         room.users.forEach(user => {
-            if(user.ws.readyState === WebSocket.OPEN){
-                user.ws.send(SubmitClickedMessage);
-            }
+          if (user.ws.readyState === WebSocket.OPEN) {
+            user.ws.send(JSON.stringify(SubmitClickedMessage));
+          }
         });
-
-        await redisClient.lPush("submissions", JSON.stringify(message));
-
+      
+        if(process.env.REDIS_URL === "No-Url-provided" || !process.env.REDIS_URL){
+          const resultMessage = {
+            Title: "No-worker"
+          }
+          room.users.forEach(user => {
+            if (user.ws.readyState === WebSocket.OPEN) {
+              user.ws.send(JSON.stringify(resultMessage));
+            }
+          });
+          return;
+        }
+        
+        //push the message into submissions queue
+        await redisClient.lPush("submissions",JSON.stringify(message))
+      
+      
+        //subscribe to the roomId
         redisClientSubscribing.subscribe(roomId, (result) => {
-            console.log(result);
+          redisClientSubscribing.unsubscribe(roomId)
+          // Parse the result received from the subscription
+          const parsedResult = JSON.parse(result);
+          
+          // Create a new JSON object containing the required fields
+          const resultMessage = {
+              Title: "Result",
+              stdout: parsedResult.stdout,
+              stderr: parsedResult.stderr,
+              status: parsedResult.status.description,
+              compile_output: parsedResult.compile_output
+          };
+      
+          // Send the resultMessageString to each user in the room
+          room.users.forEach(user => {
+            if (user.ws.readyState === WebSocket.OPEN) {
+              user.ws.send(JSON.stringify(resultMessage));
+            }
+          });
+        });
+      }
 
-            redisClientSubscribing.unsubscribe(roomId);
-
-            const parsedResult = JSON.parse(result);
-
-            const ResultMessage = {
-                Title : "Result",
-                stdout : parsedResult.stdout,
-                stderr : parsedResult.stderr,
-                status : parsedResult.status,
-                compile_output : parsedResult.compile_output
-            };
-
-            room.users.forEach(user => {
-                if(user.ws.readyState === WebSocket.OPEN){
-                    user.ws.send(JSON.stringify(ResultMessage));
-                }
-            });
-        })
-    }
 }
