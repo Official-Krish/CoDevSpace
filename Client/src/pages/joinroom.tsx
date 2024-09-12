@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {useUserStore} from '../store'
 
@@ -6,6 +6,49 @@ const JoinRoom: React.FC = () => {
   const Navigate = useNavigate()
   const { username, roomID } = useUserStore();
   const [roomId,setRoomId] = useState<string>("")
+  const [step, setStep] = useState(0);
+
+
+
+  const [name, setName] = useState("");
+  const [localAudioTrack, setLocalAudioTrack] = useState<MediaStreamTrack | null>(null);
+  const [localVideoTrack, setlocalVideoTrack] = useState<MediaStreamTrack | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const [joined, setJoined] = useState(false);
+  const  { setLocalAudioTRACK } = useUserStore();
+  const  { setLocalVideoTRACK } = useUserStore();
+
+
+  const getCam = async () => {
+    const stream = await window.navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+    })
+    // MediaStream
+    const audioTrack = stream.getAudioTracks()[0]
+    const videoTrack = stream.getVideoTracks()[0]
+    setLocalAudioTrack(audioTrack);
+    setlocalVideoTrack(videoTrack);
+    setLocalAudioTRACK(audioTrack);
+    setLocalVideoTRACK(videoTrack);
+    
+    if (!videoRef.current) {
+        return;
+    }
+    videoRef.current.srcObject = new MediaStream([videoTrack])
+    videoRef.current.play();
+    // MediaStream
+  }
+
+  useEffect(() => {
+      if (videoRef && videoRef.current) {
+          getCam()
+      }
+  }, [videoRef]);
+
+
+
   useEffect(()=>{
     // if(username==''){
     //     Navigate("/auth")
@@ -13,12 +56,19 @@ const JoinRoom: React.FC = () => {
     if(roomID!="") setRoomId(roomID)
   })
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    setStep(1);
     event.preventDefault();
-    Navigate(`/room/${roomId}`)
   };
 
+  const joinRoom = () => {
+    Navigate(`/room/${roomId}`)
+  }
+
   return (
-    <div className="min-h-screen bg-gray-900 text-blue-200 flex flex-col justify-center items-center">
+    <div>
+      {step==0 && 
+
+      <div className="min-h-screen bg-gray-900 text-blue-200 flex flex-col justify-center items-center">
       <h2 className="text-3xl mb-4">Join Room</h2>
       <form onSubmit={handleSubmit} className="flex flex-col items-center">
         <input
@@ -41,6 +91,24 @@ const JoinRoom: React.FC = () => {
           Create Room
         </button>
       </p>
+    </div>}
+
+    {step==1 && 
+      <div>
+        <video autoPlay ref={videoRef}></video>
+        <input type="text" onChange={(e) => {
+            setName(e.target.value);
+        }}>
+        </input>
+        <button onClick={() => {
+            setJoined(true);
+            joinRoom();
+
+        }}>Join</button>
+      </div>
+      
+    }
+    
     </div>
   );
 };
