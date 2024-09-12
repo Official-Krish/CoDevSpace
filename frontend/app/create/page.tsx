@@ -23,14 +23,15 @@ const CreateRomm = () => {
         const SERVER_URL = process.env.SERVER_URL;
 
         try{
-            const resposne = await fetch(`${SERVER_URL}/api/create`,{
+            const resposne = await fetch(`http://localhost:3000/api/create`,{
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     roomName: roomName,
-                    roomId: rooomId
+                    roomId: rooomId,
+                    username : "admin"
                 })
             });
 

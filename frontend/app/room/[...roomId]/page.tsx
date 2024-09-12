@@ -2,7 +2,7 @@
 
 import { useUserStore } from '@/utils/store';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
@@ -28,162 +28,291 @@ interface chat {
 }
 
 const Room = () => {
+  const [isMicOn, setIsMicOn] = useState(false)
+  const languages = ['JavaScript', 'Python', 'Java', 'C++', 'TypeScript']
+  const [msg, setmsg] = useState("");
+
+  const router = useRouter();
+  const { roomId } = useParams();
+  const { username } = useUserStore();
+  const [ roomName, setRoomName ] = useState("");
+  const [ users, setUsers ] = useState<string[]>([]);
+  const [ chats, setChats ] = useState<chat[]>([]);
+  const[ result, setResult ] = useState(null);
+  const [ language, setLanguage ] = useState("Select Language");
+  const [ code , setCode ] = useState("");
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [ submitClicked, setSubmitClicked ] = useState(false);
 
 
-    const [isMicOn, setIsMicOn] = useState(false)
-    const languages = ['JavaScript', 'Python', 'Java', 'C++', 'TypeScript']
-    const [msg, setmsg] = useState("");
+  const [remoteStreams, setRemoteStreams] = useState<MediaStream[]>([]);
+  const localStream = useRef<MediaStream | null>(null);
+  const peerConnection = useRef<RTCPeerConnection | null>(null);
+  const socketW = useRef<WebSocket | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
-    const router = useRouter();
-    const { roomId } = useParams();
-    const { username } = useUserStore();
-    const [ roomName, setRoomName ] = useState("");
-    const [ users, setUsers ] = useState<string[]>([]);
-    const [ chats, setChats ] = useState<chat[]>([]);
-    const[ result, setResult ] = useState(null);
-    const [ language, setLanguage ] = useState("Select Language");
-    const [ code , setCode ] = useState("");
-    const [socket, setSocket] = useState<WebSocket | null>(null);
-    const [ submitClicked, setSubmitClicked ] = useState(false);
 
-    useEffect(() => {
-        const url = process.env.WS_URL || "";
-        const newSocket = new WebSocket(url);
+  useEffect(() => {
+    const url = `ws://localhost:3000`;
+    const newSocket = new WebSocket("ws://localhost:3000");
 
-        newSocket.onopen = () => {
-            console.log('WebSocket connected');
+    newSocket.onopen = () => {
+      console.log('WebSocket connected');
+      setSocket(newSocket);
 
-            const msg = {
-                Title : "User-Joined",
-                roomId,
-                username
-            }
+      const msg = {
+        Title : "User-Joined",
+        roomId,
+        username
+      }
 
-            newSocket.send(JSON.stringify(msg));
-        };
+      newSocket.send(JSON.stringify(msg));
+    };
 
-        newSocket.onmessage = (message) => {
-            const parsedMessage = JSON.parse(message.data);
-            console.log(parsedMessage);
+    newSocket.onmessage = (message) => {
+      const parsedMessage = JSON.parse(message.data);
+      console.log(parsedMessage);
 
-            if (parsedMessage.Title === "Room-Info"){
-                setUsers(parsedMessage.users);
-                setCode(parsedMessage.code);
-                setLanguage(parsedMessage.language);
-                setRoomName(parsedMessage.roomName);
-                setChats(parsedMessage.chats);
-                setResult(parsedMessage.result);
-            }
-            else if (parsedMessage.Title === "Not-found"){
-                router.push("/join");
-            }
-            else if (parsedMessage.Title === "New-User"){
-                toast.success(`${parsedMessage.username} joined the room`);
-                setUsers((prev) => [...prev, parsedMessage.username]);
-            }
-            else if(parsedMessage.Title === "User-Left"){
-                toast.error(`${parsedMessage.username} left the room`);
-                setUsers((prev) => prev.filter((user) => user !== parsedMessage.username));
-            }
-
-            else if (parsedMessage.Title === "New-chat"){
-                const {username, chat} = parsedMessage;
-                setChats((prev) => {
-                    const newChat = { username, message: chat };
-                    return [...prev, newChat];
-                })
-            }
-            else if (parsedMessage.Title === "lang-change"){
-                setLanguage(parsedMessage.language);
-            }
-
-            else if (parsedMessage.Title === "Code=change"){
-                setCode(parsedMessage.code);
-            }
-            else if (parsedMessage.Title === "Submit-clicked"){
-                setSubmitClicked(true);
-            }
-            else if(parsedMessage.Title === "Result"){
-                setResult(parsedMessage);
-                setSubmitClicked(false);
-            }
-            else if (parsedMessage.Title === "No-worker"){
-                setSubmitClicked(false);
-                alert("Code cannot be processed now cause it requires a continiously running worker service whcih is expensive 😅😅, if you want to, you can clone the repo and run worker process locally!!")
-            }
-        }
-        setSocket(newSocket);
-        return () => {
-            newSocket.close();
-        }
-    }, [])
-
-    const getLanguageExtension = (language: string) => {
-        switch(language){
-            case "Python":
-                return python();
-            case "Java":
-                return java();
-            case "C++":
-                return cpp();
-            case "JavaScript":
-                return javascript({jsx : true});
-            case "Typescript":
-                return typescriptLanguage;
-            default:
-                return cpp();
-        }
-    }
-
-    const onLeave = () => {
-        const msg = {
-            Title : "User-Left",
-            roomId,
-            username
-        }
-        socket?.send(JSON.stringify(msg));
+      if (parsedMessage.Title === "Room-Info"){
+        setUsers(parsedMessage.users);
+        setCode(parsedMessage.code);
+        setLanguage(parsedMessage.language);
+        setRoomName(parsedMessage.roomName);
+        setChats(parsedMessage.chats);
+        setResult(parsedMessage.result);
+      }
+      else if (parsedMessage.Title === "Not-found"){
         router.push("/join");
+      }
+      else if (parsedMessage.Title === "New-User"){
+        toast.success(`${parsedMessage.username} joined the room`);
+        setUsers((prev) => [...prev, parsedMessage.username]);
+      }
+      else if(parsedMessage.Title === "User-left"){
+        toast.error(`${parsedMessage.username} left the room`);
+        setUsers((prev) => prev.filter((user) => user !== parsedMessage.username));
+      }
+
+      else if (parsedMessage.Title === "New-chat"){
+        const {username, chat} = parsedMessage;
+        setChats((prev) => {
+          const newChat = { username, message: chat };
+          return [...prev, newChat];
+        })
+      }
+      else if (parsedMessage.Title === "lang-change"){
+        setLanguage(parsedMessage.language);
+      }
+
+      else if (parsedMessage.Title === "Code-change"){
+        setCode(parsedMessage.code);
+      }
+      else if (parsedMessage.Title === "Submit-clicked"){
+        setSubmitClicked(true);
+      }
+      else if(parsedMessage.Title === "Result"){
+        setResult(parsedMessage);
+        setSubmitClicked(false);
+      }
+      else if (parsedMessage.Title === "No-worker"){
+        setSubmitClicked(false);
+        alert("Code cannot be processed now cause it requires a continiously running worker service whcih is expensive 😅😅, if you want to, you can clone the repo and run worker process locally!!")
+      }
     }
 
-    const handleCodeChange = (value: string) => {
-        setCode(value);
-        const msg = {
-            Title : "Code-change",
-            roomId,
-            code : value
-        }
-        socket?.send(JSON.stringify(msg));
+    newSocket.onclose = () => {
+      setSocket(null);
+      console.log('WebSocket closed');
     }
 
-    const handleLanguageChange = (value: string) => {
-        setLanguage(value);
-        const msg = {
-            Title : "lang-change",
-            roomId,
-            language : value
-        }
-        socket?.send(JSON.stringify(msg));
+    setSocket(newSocket);
+    return () => {
+      newSocket.close();
     }
+  }, [])
 
-    const onSubmit = () => {
-        const msg = {
-            Title : "Submitted",
-            roomId,
-            code,
-            language
-        }
-        socket?.send(JSON.stringify(msg));
-    }
 
-    function addChat(message : string){
-        const msg = {
-            Title : "New-chat",
-            roomId,
-            username,
-            chat : message
-        }
-        socket?.send(JSON.stringify(msg));
+  const getLanguageExtension = (language: string) => {
+    switch(language){
+      case "Python":
+        return python();
+      case "Java":
+        return java();
+      case "C++":
+        return cpp();
+      case "JavaScript":
+        return javascript({jsx : true});
+      case "Typescript":
+        return typescriptLanguage;
+      default:
+        return cpp();
     }
+  }
+
+  const onLeave = () => {
+    const msg = {
+      Title : "User-Left",
+      roomId,
+      username
+    }
+    socket?.send(JSON.stringify(msg));
+    router.push("/join");
+  }
+
+  const handleCodeChange = (value: string) => {
+    setCode(value);
+    const msg = {
+      Title : "Code-change",
+      roomId,
+      code : value
+    }
+    socket?.send(JSON.stringify(msg));
+  }
+
+  const handleLanguageChange = (value: string) => {
+    setLanguage(value);
+    const msg = {
+      Title : "lang-change",
+      roomId,
+      language : value
+    }
+    socket?.send(JSON.stringify(msg));
+  }
+
+  const onSubmit = () => {
+    const msg = {
+      Title : "Submitted",
+      roomId,
+      code,
+      language
+    }
+    socket?.send(JSON.stringify(msg));
+  }
+
+  function addChat(message : string){
+    const msg = {
+      Title : "New-chat",
+      roomId,
+      username,
+      chat : message
+    }
+    socket?.send(JSON.stringify(msg));
+  }
+
+
+
+
+  useEffect(() => {
+    socketW.current = new WebSocket('ws://localhost:3000');
+    
+    socketW.current.onmessage = (message) => {
+      const parsedMessage = JSON.parse(message.data);
+
+      // Handle WebRTC signaling (offer, answer, candidate)
+      switch (parsedMessage.Title) {
+        case 'offer':
+          handleOffer(parsedMessage.offer);
+          break;
+        case 'answer':
+          handleAnswer(parsedMessage.answer);
+          break;
+        case 'candidate':
+          handleCandidate(parsedMessage.candidate);
+          break;
+        default:
+          break;
+      }
+    };
+
+    return () => {
+      socketW.current?.close();
+    };
+  }, []);
+
+
+  // Function to handle microphone toggle
+  const handleMicToggle = async () => {
+    if (isMicOn) {
+      // Stop microphone stream
+      localStream.current?.getTracks().forEach(track => track.stop());
+      setIsMicOn(false);
+    } else {
+      // Start microphone stream and create WebRTC connection
+      try {
+        localStream.current = await navigator.mediaDevices.getUserMedia({ audio: true });
+        setIsMicOn(true);
+        setupWebRTC();
+      } catch (err) {
+        console.error('Error accessing microphone:', err);
+      }
+    }
+  };
+
+  // Set up WebRTC peer connection and offer/answer exchange
+  const setupWebRTC = async () => {
+    peerConnection.current = new RTCPeerConnection();
+
+    // Handle local ICE candidates and send them via WebSocket
+    peerConnection.current.onicecandidate = (event) => {
+      if (event.candidate) {
+        socketW.current?.send(
+          JSON.stringify({ Title: 'candidate', candidate: event.candidate })
+        );
+      }
+    };
+
+    // Handle receiving remote stream and add it to the UI
+    peerConnection.current.ontrack = (event) => {
+      setRemoteStreams((prevStreams) => [...prevStreams, event.streams[0]]);
+    };
+
+    // Add local audio tracks to the peer connection
+    localStream.current?.getTracks().forEach(track => {
+      peerConnection.current?.addTrack(track, localStream.current!);
+    });
+
+    // Create and send an offer to other peers
+    const offer = await peerConnection.current.createOffer();
+    await peerConnection.current.setLocalDescription(offer);
+    socketW.current?.send(JSON.stringify({ Title: 'offer', offer }));
+  };
+
+  // Handle receiving WebRTC offer and respond with an answer
+  const handleOffer = async (offer: RTCSessionDescriptionInit) => {
+    peerConnection.current = new RTCPeerConnection();
+
+    // Handle local ICE candidates
+    peerConnection.current.onicecandidate = (event) => {
+      if (event.candidate) {
+        socketW.current?.send(
+          JSON.stringify({ Title: 'candidate', candidate: event.candidate })
+        );
+      }
+    };
+
+    // Handle receiving remote stream
+    peerConnection.current.ontrack = (event) => {
+      setRemoteStreams((prevStreams) => [...prevStreams, event.streams[0]]);
+    };
+
+    // Set remote description and create an answer
+    await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await peerConnection.current.createAnswer();
+    await peerConnection.current.setLocalDescription(answer);
+
+    // Send answer back to the peer
+    socketW.current?.send(JSON.stringify({ Title: 'answer', answer }));
+  };
+
+  // Handle receiving WebRTC answer
+  const handleAnswer = async (answer: RTCSessionDescriptionInit) => {
+    await peerConnection.current?.setRemoteDescription(new RTCSessionDescription(answer));
+  };
+
+  // Handle receiving ICE candidate and add it to the peer connection
+  const handleCandidate = async (candidate: RTCIceCandidateInit) => {
+    await peerConnection.current?.addIceCandidate(new RTCIceCandidate(candidate));
+  };
 
 
   return (
@@ -300,7 +429,9 @@ const Room = () => {
             <Button
               variant={isMicOn ? "default" : "outline"}
               className={`w-full ${isMicOn ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} text-white`}
-              onClick={() => setIsMicOn(!isMicOn)}
+              onClick={() => {
+                handleMicToggle()
+              }}
             >
               {isMicOn ? (
                 <Mic className="h-4 w-4 mr-2" />
@@ -309,6 +440,7 @@ const Room = () => {
               )}
               {isMicOn ? "Mic On" : "Mic Off"}
             </Button>
+            <audio ref={audioRef} autoPlay />
           </div>
         </div>
       </div>

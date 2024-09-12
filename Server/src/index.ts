@@ -55,6 +55,15 @@ wss.on('connection', function connection(ws) {
     else if(message.Title==="Submitted"){
       RoomManager.getInstance().handleSubmitted(message)
     }
+
+    else if (message.Title === 'offer' || message.Title === 'answer' || message.Title === 'candidate') {
+      console.log('Received WebRTC message:', message);
+      wss.clients.forEach((client) => {
+        if (client !== ws && client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify(message));
+        }
+      });
+    }
   });
 
   ws.send(JSON.stringify({Title : "Greet" , msg:'Hello! Message From Server!!'}));
