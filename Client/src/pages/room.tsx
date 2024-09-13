@@ -21,6 +21,7 @@ import { Mic, MicOff, Users, MessageSquare, Code2, ChevronDown, Camera, CameraOf
 
 import { Socket, io } from "socket.io-client";
 import { WEB_SOCKET_URL } from "../../config";
+import Draggable from 'react-draggable';
 
 
 type chat = 
@@ -34,6 +35,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
   localVideoTrack: MediaStreamTrack | null;
   name: string;
 }) => {
+  window.history.pushState(null, '', '/room');
   const Navigate = useNavigate()
   const [isMicOn, setIsMicOn] = useState(false)
   const languages = ['JavaScript', 'Python', 'Java', 'C++', 'TypeScript']
@@ -521,9 +523,24 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
               </Button>
             </div>
           </div>
+          <Draggable>
+            <div
+              style={{
+                width: '200px',
+                height: '150px',
+                backgroundColor: 'black', // You can style the container for your video
+                border: '1px solid #ccc',
+                position: 'absolute',
+                zIndex: 1000,
+              }}
+              className='flex'
+            >
+              <video autoPlay width={400} height={100} ref={localVideoRef} />
+              <video autoPlay width={400} height={100} ref={remoteVideoRef} />
+            </div>
+          </Draggable>
         </div>
-        <video autoPlay width={400} height={400} ref={localVideoRef} />
-        <video autoPlay width={400} height={400} ref={remoteVideoRef} />
+        
       </div>
   );
 }
