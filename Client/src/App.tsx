@@ -1,7 +1,6 @@
 
 import './App.css'
 import { Route, Routes } from 'react-router-dom'
-import Room from './pages/room'
 import Auth from './pages/auth'
 import JoinRoom from './pages/joinroom'
 import CreateRoom from './pages/createroom'
@@ -16,7 +15,6 @@ function App() {
         <Route path='/auth' element={<Auth />}></Route>
         <Route path='/join' element={<JoinRoom />}></Route>
         <Route path='/create' element={<CreateRoom />}></Route>
-        <Route path='/room/:roomId' element={<Room />}></Route>
       </Routes>
     </>
   )

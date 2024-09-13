@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu"
-import { Mic, MicOff, Users, MessageSquare, Code2, ChevronDown } from 'lucide-react'
+import { Mic, MicOff, Users, MessageSquare, Code2, ChevronDown, Camera, CameraOff } from 'lucide-react'
 
 import { Socket, io } from "socket.io-client";
 import { WEB_SOCKET_URL } from "../../config";
@@ -29,14 +29,17 @@ type chat =
     message:string
   }
 
-const Room: React.FC = (
-) => {
+export const Room = ({ localAudioTrack, localVideoTrack, name } : {
+  localAudioTrack: MediaStreamTrack | null;
+  localVideoTrack: MediaStreamTrack | null;
+  name: string;
+}) => {
   const Navigate = useNavigate()
   const [isMicOn, setIsMicOn] = useState(false)
   const languages = ['JavaScript', 'Python', 'Java', 'C++', 'TypeScript']
   const [msg, setmsg] = useState("");
 
-  const { roomId } = useParams();
+  const roomId  = localStorage.getItem("roomId") || "";
   const { username } = useUserStore();
   const [ roomName, setRoomName ] = useState("");
   const [ users, setUsers ] = useState<string[]>([]);
@@ -199,7 +202,7 @@ const Room: React.FC = (
 
   // WEBRTC
 
-  const [lobby, setLobby] = useState<boolean>(true);
+    const [lobby, setLobby] = useState<boolean>(true);
     const [socket2, setSocket2] = useState<Socket | null>(null);
     const [sendingPc, setSendingPc] = useState<RTCPeerConnection | null>(null);
     const [receivingPc, setReceivingPc] = useState<RTCPeerConnection | null>(null);
@@ -211,172 +214,169 @@ const Room: React.FC = (
 
     const [micEnabled, setMicEnabled] = useState(true);
     const [cameraEnabled, setCameraEnabled] = useState(true);
-    const { LocalAudioTrack } = useUserStore();
-    const { LocalVideoTrack } = useUserStore();
 
-  useEffect(() => {
-    const socket = io(WEB_SOCKET_URL);
-    setSocket2(socket2);
+    useEffect(() => {
+        const RTCsocket = io(WEB_SOCKET_URL);
+        setSocket2(socket2);
 
-
-    socket.on("connect", () => {
-      const name = "John Doe";  
-      const id = roomId;      
-      socket.emit("userDetails", { name, id });
-    });
-
-    socket.on('send-offer', async ({ roomId }: { roomId: string }) => {
-        console.log("sending offer");
-        setLobby(false);
-        const pc = new RTCPeerConnection();
-        setSendingPc(pc);
-
-        if (LocalVideoTrack) {
-            pc.addTrack(LocalVideoTrack);
-        }
-        if (LocalAudioTrack) {
-            pc.addTrack(LocalAudioTrack);
-        }
-
-        pc.onicecandidate = (e) => {
-            if (e.candidate) {
-                socket.emit("add-ice-candidate", {
-                    candidate: e.candidate,
-                    type: "sender",
-                    roomId
-                });
-            }
-        };
-
-        pc.onnegotiationneeded = async () => {
-            const sdp = await pc.createOffer();
-            pc.setLocalDescription(sdp);
-            socket.emit("offer", {
-                sdp,
-                roomId
-            });
-        };
-    });
-
-    socket.on("offer", async ({ roomId, sdp: remoteSdp }: { roomId: string; sdp: RTCSessionDescriptionInit }) => {
-        console.log("received offer");
-        setLobby(false);
-        const pc = new RTCPeerConnection();
-        pc.setRemoteDescription(remoteSdp);
-        const sdp = await pc.createAnswer();
-        pc.setLocalDescription(sdp);
-
-        const stream = new MediaStream();
-        if (remoteVideoRef.current) {
-            remoteVideoRef.current.srcObject = stream;
-        }
-
-        setRemoteMediaStream(stream);
-        setReceivingPc(pc);
-
-        pc.ontrack = (e) => {
-            alert("ontrack");
-        }
-
-        pc.onicecandidate = (e) => {
-            if (e.candidate) {
-                socket.emit("add-ice-candidate", {
-                    candidate: e.candidate,
-                    type: "receiver",
-                    roomId
-                });
-            }
-        };
-
-        socket.emit("answer", {
-            roomId,
-            sdp: sdp
+        RTCsocket.on("connect", () => {
+          const name = "John Doe";  
+          const id = roomId;      
+          RTCsocket.emit("userDetails", { name, id });
         });
-        setTimeout(() => {
-            const track1 = pc.getTransceivers()[0].receiver.track
-            const track2 = pc.getTransceivers()[1].receiver.track
-            console.log(track1);
-            if (track1.kind === "video") {
-                setRemoteAudioTrack(track2)
-                setRemoteVideoTrack(track1)
-            } else {
-                setRemoteAudioTrack(track1)
-                setRemoteVideoTrack(track2)
+
+        RTCsocket.on('send-offer', async ({ roomId }: { roomId: string }) => {
+            console.log("sending offer");
+            setLobby(false);
+            const pc = new RTCPeerConnection();
+            setSendingPc(pc);
+
+            if (localVideoTrack) {
+                pc.addTrack(localVideoTrack);
             }
-            //@ts-ignore
-            remoteVideoRef.current.srcObject.addTrack(track1)
-            //@ts-ignore
-            remoteVideoRef.current.srcObject.addTrack(track2)
-            //@ts-ignore
-            remoteVideoRef.current.play();
-        }, 5000)
-    });
+            if (localAudioTrack) {
+                pc.addTrack(localAudioTrack);
+            }
+
+            pc.onicecandidate = (e) => {
+                if (e.candidate) {
+                    RTCsocket.emit("add-ice-candidate", {
+                        candidate: e.candidate,
+                        type: "sender",
+                        roomId
+                    });
+                }
+            };
+
+            pc.onnegotiationneeded = async () => {
+                const sdp = await pc.createOffer();
+                pc.setLocalDescription(sdp);
+                RTCsocket.emit("offer", {
+                    sdp,
+                    roomId
+                });
+            };
+        });
+
+        RTCsocket.on("offer", async ({ roomId, sdp: remoteSdp }: { roomId: string; sdp: RTCSessionDescriptionInit }) => {
+            console.log("received offer");
+            setLobby(false);
+            const pc = new RTCPeerConnection();
+            pc.setRemoteDescription(remoteSdp);
+            const sdp = await pc.createAnswer();
+            pc.setLocalDescription(sdp);
+
+            const stream = new MediaStream();
+            if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = stream;
+            }
+
+            setRemoteMediaStream(stream);
+            setReceivingPc(pc);
+
+            pc.ontrack = (e) => {
+                alert("ontrack");
+            }
+
+            pc.onicecandidate = (e) => {
+                if (e.candidate) {
+                    RTCsocket.emit("add-ice-candidate", {
+                        candidate: e.candidate,
+                        type: "receiver",
+                        roomId
+                    });
+                }
+            };
+
+            RTCsocket.emit("answer", {
+                roomId,
+                sdp: sdp
+            });
+            setTimeout(() => {
+                const track1 = pc.getTransceivers()[0].receiver.track
+                const track2 = pc.getTransceivers()[1].receiver.track
+                console.log(track1);
+                if (track1.kind === "video") {
+                    setRemoteAudioTrack(track2)
+                    setRemoteVideoTrack(track1)
+                } else {
+                    setRemoteAudioTrack(track1)
+                    setRemoteVideoTrack(track2)
+                }
+                //@ts-ignore
+                remoteVideoRef.current.srcObject.addTrack(track1)
+                //@ts-ignore
+                remoteVideoRef.current.srcObject.addTrack(track2)
+                //@ts-ignore
+                remoteVideoRef.current.play();
+            }, 5000)
+        });
+
+        
+
+        RTCsocket.on("answer", ({ roomId, sdp: remoteSdp }: { roomId: string; sdp: RTCSessionDescriptionInit }) => {
+            setLobby(false);
+            setSendingPc(pc => {
+                if (pc) {
+                    pc.setRemoteDescription(remoteSdp);
+                }
+                return pc;
+            });
+        });
+
+        RTCsocket.on("lobby", () => {
+            setLobby(true);
+        });
+
+        RTCsocket.on("add-ice-candidate", ({candidate, type}) => {
+            console.log("add ice candidate from remote");
+            console.log({candidate, type})
+            if (type == "sender") {
+                setReceivingPc(pc => {
+                    if (!pc) {
+                        console.error("receicng pc nout found")
+                    } else {
+                        console.error(pc.ontrack)
+                    }
+                    pc?.addIceCandidate(candidate)
+                    return pc;
+                });
+            } else {
+                setSendingPc(pc => {
+                    if (!pc) {
+                        console.error("sending pc nout found")
+                    } else {
+                        // console.error(pc.ontrack)
+                    }
+                    pc?.addIceCandidate(candidate)
+                    return pc;
+                });
+            }
+        })
+
+        setSocket2(socket2);
+    }, [name])
+
+    useEffect(() => {
+        if (localVideoRef.current && localVideoTrack) {
+            const stream = new MediaStream([localVideoTrack]);
+            localVideoRef.current.srcObject = stream;
+            localVideoRef.current.play();
+        }
+    }, [localVideoTrack]);
 
     
-
-    socket.on("answer", ({ roomId, sdp: remoteSdp }: { roomId: string; sdp: RTCSessionDescriptionInit }) => {
-        setLobby(false);
-        setSendingPc(pc => {
-            if (pc) {
-                pc.setRemoteDescription(remoteSdp);
-            }
-            return pc;
-        });
-    });
-
-    socket.on("lobby", () => {
-        setLobby(true);
-    });
-
-    socket.on("add-ice-candidate", ({candidate, type}) => {
-        console.log("add ice candidate from remote");
-        console.log({candidate, type})
-        if (type == "sender") {
-            setReceivingPc(pc => {
-                if (!pc) {
-                    console.error("receicng pc nout found")
-                } else {
-                    console.error(pc.ontrack)
-                }
-                pc?.addIceCandidate(candidate)
-                return pc;
-            });
-        } else {
-            setSendingPc(pc => {
-                if (!pc) {
-                    console.error("sending pc nout found")
-                } else {
-                    // console.error(pc.ontrack)
-                }
-                pc?.addIceCandidate(candidate)
-                return pc;
-            });
+    useEffect(() => {
+        if (localAudioTrack) {
+            localAudioTrack.enabled = micEnabled;
         }
-    })
+    }, [micEnabled]);
 
-    setSocket2(socket2)
-}, [name])
-
-useEffect(() => {
-    if (localVideoRef.current && LocalVideoTrack) {
-        const stream = new MediaStream([LocalVideoTrack]);
-        localVideoRef.current.srcObject = stream;
-        localVideoRef.current.play();
-    }
-}, [LocalVideoTrack]);
-
-
-useEffect(() => {
-    if (LocalAudioTrack) {
-        LocalAudioTrack.enabled = micEnabled;
-    }
-}, [micEnabled]);
-
-useEffect(() => {
-    if (LocalVideoTrack) {
-        LocalVideoTrack.enabled = cameraEnabled;
-    }
-}, [cameraEnabled]);
+    useEffect(() => {
+        if (localVideoTrack) {
+            localVideoTrack.enabled = cameraEnabled;
+        }
+    }, [cameraEnabled]);
 
 
 
@@ -502,13 +502,29 @@ useEffect(() => {
                 ) : (
                   <MicOff className="h-4 w-4 mr-2" />
                 )}
-                {isMicOn ? "Mic On" : "Mic Off"}
+                {micEnabled ? "Mic On" : "Mic Off"}
+
+
+              </Button>
+              <Button 
+                variant={isMicOn ? "default" : "outline"}
+                className={`w-full ${cameraEnabled ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} text-white`}
+                onClick={() => setCameraEnabled(!cameraEnabled)}
+              >
+                
+                {cameraEnabled ? (
+                  <Camera className="h-4 w-4 mr-2" />
+                ) : (
+                  <CameraOff className="h-4 w-4 mr-2" />
+                )}
+                {cameraEnabled ? "Camera On" : "Camera Off"}
               </Button>
             </div>
           </div>
         </div>
+        <video autoPlay width={400} height={400} ref={localVideoRef} />
+        <video autoPlay width={400} height={400} ref={remoteVideoRef} />
       </div>
   );
 }
-
-export default Room
+export default Room;

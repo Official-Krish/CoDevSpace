@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 import {useUserStore} from '../store'
@@ -9,7 +9,7 @@ const CreateRoom: React.FC = () => {
   const [roomName, setRoomName] = useState('');
   const [roomId, setRoomId] = useState('');
   const Navigate = useNavigate()
-  const { username, setRoomID } = useUserStore();
+  const { setRoomID } = useUserStore();
   // useEffect(()=>{
   //   if(username==''){
   //       Navigate("/auth")
@@ -47,6 +47,7 @@ const CreateRoom: React.FC = () => {
       if(response.ok){
         //Add a toast here
         setRoomID(roomId)
+        localStorage.setItem("roomId", roomId);
         Navigate("/join")
       }
       else{
