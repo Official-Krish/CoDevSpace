@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {useUserStore} from '../store'
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
@@ -37,7 +37,6 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
 }) => {
   window.history.pushState(null, '', '/room');
   const Navigate = useNavigate()
-  const [isMicOn, setIsMicOn] = useState(false)
   const languages = ['JavaScript', 'Python', 'Java', 'C++', 'TypeScript']
   const [msg, setmsg] = useState("");
 
@@ -152,6 +151,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
     }
     socket?.send(JSON.stringify(msg))
     setRoomID("")
+    localStorage.setItem("roomId", "");
     Navigate("/join")
   }
 
@@ -495,8 +495,8 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
             {/* Mic Toggle */}
             <div className="p-4 bg-gradient-to-r from-gray-800 to-indigo-900">
               <Button
-                variant={isMicOn ? "default" : "outline"}
-                className={`w-full ${isMicOn ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} text-white`}
+                variant={micEnabled ? "default" : "outline"}
+                className={`w-full ${micEnabled ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} text-white`}
                 onClick={() => setMicEnabled(!micEnabled)}
               >
                 {micEnabled ? (
@@ -509,7 +509,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
 
               </Button>
               <Button 
-                variant={isMicOn ? "default" : "outline"}
+                variant={cameraEnabled ? "default" : "outline"}
                 className={`w-full ${cameraEnabled ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} text-white`}
                 onClick={() => setCameraEnabled(!cameraEnabled)}
               >
@@ -519,7 +519,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
                 ) : (
                   <CameraOff className="h-4 w-4 mr-2" />
                 )}
-                {cameraEnabled ? "Camera On" : "Camera Off"}
+                {cameraEnabled ? "Camera Off" : "Camera On"}
               </Button>
             </div>
           </div>
@@ -536,7 +536,8 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
               className='flex'
             >
               <video autoPlay width={400} height={100} ref={localVideoRef} />
-              <video autoPlay width={400} height={100} ref={remoteVideoRef} />
+              
+              <video autoPlay width={400} height={100} ref={remoteVideoRef} /> 
             </div>
           </Draggable>
         </div>
