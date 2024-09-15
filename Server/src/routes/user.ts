@@ -80,7 +80,7 @@ userRouter.post("/login", async (req, res) => {
             );
 
             res.cookie('token', token);
-            return res.status(200).json({ msg : "login successful" , token});
+            return res.status(200).json({ msg : "login successful" , name : user.name});
         }
     }
 });

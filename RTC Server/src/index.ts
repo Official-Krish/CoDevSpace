@@ -20,8 +20,6 @@ const userManager = new UserManager();
 io.on('connection', (socket: Socket) => {
   console.log('a user connected');
   socket.on("userDetails", ({ name, id }) => {
-    console.log(`User connected with name: ${name} and id: ${id}`);
-    
     userManager.addUser(name, socket, id);
   });
   socket.on("disconnect", () => {
@@ -31,5 +29,5 @@ io.on('connection', (socket: Socket) => {
 });
 
 server.listen(3001, () => {
-    console.log('listening on :3000');
+    console.log('listening on :3001');
 });

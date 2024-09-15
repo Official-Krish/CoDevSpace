@@ -55,7 +55,7 @@ export class UserManager {
             if (usersInGroup.length < 2) {
                 return; // Skip if there are fewer than 2 users in the group
             }
-
+            
             const roomId = this.roomManager.createRoom(usersInGroup);
             console.log(`Created room ${roomId} for users with ID ${usersInGroup[0].id}`);
 

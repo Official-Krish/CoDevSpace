@@ -18,6 +18,7 @@ export class RoomManager {
         this.rooms.set(roomId, { users });
 
         users.forEach(user => user.socket.emit("send-offer", { roomId }));
+        return roomId;
     }
 
     onOffer(roomId: string, sdp: string, senderSocketid: string) {

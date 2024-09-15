@@ -5,6 +5,7 @@ import { RoomManager } from './utils/roomManager';
 import cors from 'cors';
 import { userRouter } from './routes/user';
 import { authMiddleware } from './middleware';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 app.use(express.json());
@@ -12,6 +13,7 @@ app.use(cors({
   credentials: true,
   origin: "http://localhost:5173"
 }));
+app.use(cookieParser());
 
 const server = app.listen(3000, () => {
   console.log('Server is running on http://localhost:3000');
@@ -65,7 +67,7 @@ wss.on('connection', function connection(ws) {
   ws.send(JSON.stringify({Title : "Greet" , msg:'Hello! Message From Server!!'}));
 });
 
-app.post("/api/create", authMiddleware, (req , res ) => {
+app.post("/api/create", (req , res ) => {
     const { username , roomName, roomId } = req.body;
 
     if(!username || !roomName || !roomId){

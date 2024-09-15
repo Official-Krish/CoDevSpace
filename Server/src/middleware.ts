@@ -14,7 +14,8 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
         if (!payload.email) {
             return res.status(401).json({ error: "Invalid token" });
         }
-        
+        // @ts-ignore
+        req.user = { email: payload.email };
         next();
     } catch (e) {
         return res.status(401).json({ error: "Unauthorized" });
