@@ -25,6 +25,8 @@ export default function SignInPage() {
         const handleSubmit = await axios.post(`${BACKEND_URL}/api/v1/user/login`, {
             email,
             password,
+        }, {
+            withCredentials: true,
         });
     
         if(handleSubmit.status === 200){

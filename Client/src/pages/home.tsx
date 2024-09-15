@@ -5,9 +5,16 @@ import { Card, CardContent } from "../components/ui/card"
 import { Input } from "../components/ui/input"
 import {Users, Zap, Globe } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import Cookies from "js-cookie";
+
 
 export default function Home() {
   const navigate = useNavigate();
+
+  const handleSubmit = () => {
+    Cookies.get("token") ? navigate("/create") : navigate("/signin")
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-950 text-gray-300">
       <AppBar/>
@@ -25,7 +32,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="space-x-4">
-                <Button variant="default" className="bg-emerald-600 hover:bg-emerald-700 text-white">Get Started</Button>
+                <Button variant="default" className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => handleSubmit()}>Get Started</Button>
                 <Button variant="outline" className="text-emerald-500 border-emerald-400 hover:bg-emerald-600 hover:text-black">Learn More</Button>
               </div>
             </div>

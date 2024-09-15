@@ -29,6 +29,8 @@ export default function SignUpPage() {
             email,
             password,
             name
+        }, {
+            withCredentials: true,
         });
     
         if(handleSubmit.status === 200){
