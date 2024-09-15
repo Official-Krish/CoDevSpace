@@ -3,10 +3,15 @@ import { createClient } from 'redis';
 import { WebSocketServer } from 'ws';
 import { RoomManager } from './utils/roomManager';
 import cors from 'cors';
+import { userRouter } from './routes/user';
+import { authMiddleware } from './middleware';
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  credentials: true,
+  origin: "http://localhost:5173"
+}));
 
 const server = app.listen(3000, () => {
   console.log('Server is running on http://localhost:3000');
@@ -55,21 +60,12 @@ wss.on('connection', function connection(ws) {
     else if(message.Title==="Submitted"){
       RoomManager.getInstance().handleSubmitted(message)
     }
-
-    else if (message.Title === 'offer' || message.Title === 'answer' || message.Title === 'candidate') {
-      console.log('Received WebRTC message:', message);
-      wss.clients.forEach((client) => {
-        if (client !== ws && client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify(message));
-        }
-      });
-    }
   });
 
   ws.send(JSON.stringify({Title : "Greet" , msg:'Hello! Message From Server!!'}));
 });
 
-app.post("/api/create", (req , res ) => {
+app.post("/api/create", authMiddleware, (req , res ) => {
     const { username , roomName, roomId } = req.body;
 
     if(!username || !roomName || !roomId){
@@ -86,6 +82,8 @@ app.post("/api/create", (req , res ) => {
     }
 })
 
+
+app.use("/api/v1/user", userRouter);
 
 
 
