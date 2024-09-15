@@ -4,8 +4,10 @@ import { Button } from "../components/ui/button"
 import { Card, CardContent } from "../components/ui/card"
 import { Input } from "../components/ui/input"
 import {Users, Zap, Globe } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 export default function Home() {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col min-h-screen bg-gray-950 text-gray-300">
       <AppBar/>
@@ -98,10 +100,10 @@ export default function Home() {
                     placeholder="Enter your email" 
                     type="email" 
                   />
-                  <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white">Sign Up</Button>
+                  <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => navigate("/signup")}>Sign Up</Button>
                 </form>
                 <p className="text-xs text-gray-400">
-                  By signing up, you agree to our{" "}
+                    By signing up, you agree to our{" "}
                   <div className="underline underline-offset-2 hover:text-emerald-400 transition-colors">
                     Terms & Conditions
                   </div>

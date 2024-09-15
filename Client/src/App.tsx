@@ -5,6 +5,8 @@ import Auth from './pages/auth'
 import JoinRoom from './pages/joinroom'
 import CreateRoom from './pages/createroom'
 import Home from './pages/home'
+import SignUpPage from './pages/Signup'
+import SignInPage from './pages/Signin'
 
 function App() {
 
@@ -15,6 +17,8 @@ function App() {
         <Route path='/auth' element={<Auth />}></Route>
         <Route path='/join' element={<JoinRoom />}></Route>
         <Route path='/create' element={<CreateRoom />}></Route>
+        <Route path='/Signup' element={<SignUpPage />}></Route>
+        <Route path='/Signin' element={<SignInPage />}></Route>
       </Routes>
     </>
   )
