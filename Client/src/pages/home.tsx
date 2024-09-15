@@ -3,7 +3,7 @@ import { AppBar } from "../components/appbar"
 import { Button } from "../components/ui/button"
 import { Card, CardContent } from "../components/ui/card"
 import { Input } from "../components/ui/input"
-import {Users, Zap, Globe } from "lucide-react"
+import {Users, Zap, Globe, Plus, LogIn } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import Cookies from "js-cookie";
 
@@ -12,7 +12,7 @@ export default function Home() {
   const navigate = useNavigate();
 
   const handleSubmit = () => {
-    Cookies.get("token") ? navigate("/create") : navigate("/signin")
+    navigate("/signin")
   }
 
   return (
@@ -20,7 +20,7 @@ export default function Home() {
       <AppBar/>
       
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-gray-900">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-40 bg-gray-900">
           <div className="container px-4 md:px-6 max-w-6xl mx-auto">
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
@@ -32,8 +32,22 @@ export default function Home() {
                 </p>
               </div>
               <div className="space-x-4">
-                <Button variant="default" className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => handleSubmit()}>Get Started</Button>
-                <Button variant="outline" className="text-emerald-500 border-emerald-400 hover:bg-emerald-600 hover:text-black">Learn More</Button>
+                {Cookies.get("token") ? 
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white py-4" onClick={() => navigate("/create")}>
+                      <Plus className="mr-2 h-4 w-4 font-bold"/> Create Session
+                    </Button>
+                    <Button className="w-full sm:w-auto bg-gray-700 hover:bg-gray-600 text-white py-4" onClick={() => navigate("/join")}>
+                      <LogIn className="mr-2 h-4 w-4 font-bold" /> Join Session
+                    </Button>
+                  </div>
+                :
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button variant="default" className="bg-emerald-600 hover:bg-emerald-700 text-white py-4 px-5" onClick={() => handleSubmit()}>Get Started</Button>
+                    <Button variant="outline" className="text-emerald-500 border-emerald-400 hover:bg-emerald-600 hover:text-black px-5 py-4">Learn More</Button>
+                  </div>
+                }
+                
               </div>
             </div>
           </div>

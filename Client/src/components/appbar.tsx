@@ -12,7 +12,7 @@ export const AppBar = () => {
                 <div className="max-w-6xl mx-auto w-full flex justify-between items-center">
                     <div className="flex items-center justify-center">
                         <Code2 className="h-6 w-6 mr-2 text-emerald-400" />
-                        <button className="font-bold text-emerald-400" onClick={() => navigate("/")}>CollabCode</button>
+                        <button className="font-bold text-emerald-400" onClick={() => navigate("/")}>CoDevSpace</button>
                     </div>
                     <nav className="flex gap-4 sm:gap-6">
                         <button className="text-sm font-medium hover:text-emerald-400 transition-colors">
@@ -29,7 +29,7 @@ export const AppBar = () => {
                                 <UserDropdown />
                             </div>
                             : 
-                            <div> 
+                            <div className="flex gap-4"> 
                                 <button className="text-sm font-medium hover:text-emerald-400 transition-colors" onClick={() => navigate("/signin")}>
                                     Sign In
                                 </button>
