@@ -8,7 +8,7 @@ export const AppBar = () => {
     
     return (
         <div>
-            <header className="px-4 lg:px-6 h-14 flex items-center border-b border-gray-800">
+            <header className="px-4 lg:px-6 h-14 flex items-center border-b border-gray-800 bg-gray-900">
                 <div className="max-w-6xl mx-auto w-full flex justify-between items-center">
                     <div className="flex items-center justify-center">
                         <Code2 className="h-6 w-6 mr-2 text-emerald-400" />

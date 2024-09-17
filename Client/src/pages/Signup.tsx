@@ -7,6 +7,7 @@ import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { BACKEND_URL } from "../../config"
+import { useUserStore } from "../store"
 
 export default function SignUpPage() {
 
@@ -14,6 +15,7 @@ export default function SignUpPage() {
     const [name , setName] = useState<string>(""); 
     const [email , setEmail] = useState<string>("");
     const [password , setPassword] = useState<string>("");
+    const { setUsername } = useUserStore();
 
     const signup = async({
         email,
@@ -24,7 +26,8 @@ export default function SignUpPage() {
         password: string,
         name: string
     }) => {
-    
+
+        setUsername(name);
         const handleSubmit = await axios.post(`${BACKEND_URL}/api/v1/user/signup`, {
             email,
             password,

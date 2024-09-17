@@ -1,6 +1,6 @@
 export const Footer = () => {
-    return <div className="absolute inset-x-0 bottom-0">
-        <footer className="w-full py-6 bg-gray-950 border-t border-gray-800">
+    return <div className="pt-4">
+        <footer className="w-full py-6 bg-gray-950 border-t border-gray-800 pb-10">
             <div className="container px-4 md:px-6 max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center">
                 <p className="text-xs text-gray-400">© 2024 CoDevSpace. All rights reserved.</p>
                 <nav className="flex gap-4 sm:gap-6 mt-4 sm:mt-0">

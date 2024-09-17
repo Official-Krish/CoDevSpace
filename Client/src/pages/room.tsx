@@ -17,11 +17,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu"
-import { Mic, MicOff, Users, MessageSquare, Code2, ChevronDown, Camera, CameraOff } from 'lucide-react'
+import { Users, MessageSquare, Code2, ChevronDown, MicIcon, MicOffIcon, Video, VideoOff, Info, LogOut, Mic, Copy } from 'lucide-react'
 
 import { Socket, io } from "socket.io-client";
 import { WEB_SOCKET_URL } from "../../config";
 import Draggable from 'react-draggable';
+import { AppBar } from '../components/appbar';
+import { Footer } from '../components/footer';
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '../components/ui/drawer';
 
 
 type chat = 
@@ -36,7 +39,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
   name: string;
 }) => {
   window.history.pushState(null, '', '/room');
-  const Navigate = useNavigate()
+  const Navigate = useNavigate();
   const languages = ['JavaScript', 'Python', 'Java', 'C++', 'TypeScript']
   const [msg, setmsg] = useState("");
 
@@ -51,6 +54,12 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [ submitClicked, setSubmitClicked ] = useState(false);
   const { setRoomID } = useUserStore();
+
+
+  const copyRoomId = () => {
+    navigator.clipboard.writeText(roomId);
+    toast.success('Room ID copied to clipboard');
+  }
 
   //fire socket events on lang change, chat , code change, new user is done, add button leave user and copy room id
 
@@ -152,7 +161,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
     socket?.send(JSON.stringify(msg))
     setRoomID("")
     localStorage.setItem("roomId", "");
-    Navigate("/join")
+    Navigate("/join");
   }
 
   const handleCodeChange = (val:string) => {
@@ -222,7 +231,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
         setSocket2(socket2);
 
         RTCsocket.on("connect", () => {
-          const name = "John Doe";  
+          const name = localStorage.getItem("name");
           const id = roomId;      
           RTCsocket.emit("userDetails", { name, id });
         });
@@ -384,165 +393,196 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
 
 
     return (
-      <div className="flex flex-col h-screen bg-gray-900 text-gray-100">
+      <div className='bg-gray-900'>
+        <AppBar/>
+        <div className="flex flex-col h-screen bg-gray-900 text-gray-100">
           <div className="flex flex-1 overflow-hidden p-4 space-x-4">
-              <div className="flex flex-col flex-1 bg-gray-800 rounded-lg shadow-xl overflow-hidden">
-                  {/* Language Dropdown */}
-                  <div className="p-2 bg-gray-700 border-b border-gray-600 flex items-center justify-between">
-                      <Code2 className="h-5 w-5 mr-2 text-purple-400" />
-                      <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                              <Button variant="outline" className="w-[180px] justify-between bg-gray-800 text-white border-gray-600">
-                                  {language}
-                                  <ChevronDown className="ml-2 h-4 w-4 text-gray-400" />
-                              </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-[180px] bg-gray-800 border-gray-600">
-                              {languages.map((lang) => (
-                              <DropdownMenuItem
-                                  key={lang}
-                                  onSelect={() => {
-                                      setLanguage(lang)
-                                      handleLangChange(lang)
-                                  }}
-                                  className="text-white hover:bg-gray-700"
-                              >
-                                  {lang}
-                              </DropdownMenuItem>
-                              ))}
-                          </DropdownMenuContent>
-                      </DropdownMenu>
-  
-                      <div className='flex justify-end px-3 py-1 rounded-md bg-green-700 text-white hover:bg-green-600 cursor-pointer'>
-                          <button onClick={() => {
-                              onSubmit()
-                              }}>
-                              Submit
-                          </button>
-                      </div>
-                  </div>
-  
-                  {/* Code Editor */}
-              <div className='flex-1'>
-                  <CodeMirror
-                      value={code} 
-                      onChange={(val)=>{handleCodeChange(val)}}
-                      height="100%"
-                      width="100%"
-                      theme="dark"
-                      extensions={[getLanguageExtension(language)]}
-                  />
-              </div>
-  
-            {/* Output Box */}
-            <div className="h-1/3 p-4 bg-gray-700 border-t-2 border-gray-600">
-              <h2 className="text-lg font-semibold mb-2 text-purple-300">Output</h2>
-              <Textarea
-                className="w-full h-[calc(100%-2rem)] resize-none font-mono bg-gray-800 text-gray-100 border-2 border-gray-600 rounded-md"
-                readOnly
-                placeholder="Output will appear here..."
-                value={result ? result : ""}
+            <div className="flex flex-col flex-1 bg-gray-900 rounded-lg shadow-xl overflow-hidden">
+                {/* Language Dropdown */}
+                <div className="p-2 bg-gray-800 border-b border-gray-600 flex items-center justify-between">
+                    <Code2 className="h-5 w-5 mr-2 text-emerald-400" />
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="w-[180px] justify-between bg-gray-800 text-white border-gray-600">
+                                {language}
+                                <ChevronDown className="ml-2 h-4 w-4 text-gray-400" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-[180px] bg-gray-800 border-gray-600">
+                            {languages.map((lang) => (
+                            <DropdownMenuItem
+                                key={lang}
+                                onSelect={() => {
+                                    setLanguage(lang)
+                                    handleLangChange(lang)
+                                }}
+                                className="text-white hover:bg-gray-700"
+                            >
+                                {lang}
+                            </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <div className='flex justify-end px-3 py-1 rounded-md bg-green-700 text-white hover:bg-green-600 cursor-pointer'>
+                        <button onClick={() => {
+                            onSubmit()
+                            }}>
+                            Submit
+                        </button>
+                    </div>
+                </div>
+
+                {/* Code Editor */}
+            <div className='flex-1 bg-gray-800'>
+              <CodeMirror
+                value={code} 
+                onChange={(val)=>{handleCodeChange(val)}}
+                height="100%"
+                width="100%"
+                theme="dark"
+                extensions={[getLanguageExtension(language)]}
               />
             </div>
+
+          {/* Output Box */}
+          <div className="h-1/3 p-4 bg-gray-800 border-t-2 border-gray-700">
+            <h2 className="text-lg font-semibold mb-2 text-purple-300">Output</h2>
+            <Textarea
+              className="w-full h-[calc(100%-2rem)] resize-none font-mono bg-gray-900 text-gray-100 border-2 border-gray-600 rounded-md"
+              readOnly
+              placeholder="Output will appear here..."
+              value={result ? result : ""}
+            />
           </div>
-  
-          <div className="w-80 flex flex-col bg-gray-800 rounded-lg shadow-xl overflow-hidden">
-            {/* Participants */}
-            <div className="p-4 bg-gradient-to-r from-gray-800 to-indigo-900">
+        </div>
+
+        <div className="w-80 flex flex-col bg-gray-900 rounded-lg shadow-xl overflow-hidden">
+          {/* Participants */}
+          <div className="p-4 bg-gradient-to-r from-gray-800 to-indigo-900">
+            <div className='flex justify-between items-center'>
               <h2 className="text-lg font-semibold mb-2 flex items-center text-purple-300">
                 <Users className="h-5 w-5 mr-2" />
                 Participants
               </h2>
-              <ul className="space-y-1">
-                {users.map((participant, index) => (
-                  <li key={index} className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-green-400 mr-2"></div>
-                    {participant}
-                  </li>
-                ))}
-              </ul>
-            </div>
-  
-            {/* Chat */}
-            <div className="flex-1 flex flex-col p-4 overflow-hidden">
-              <h2 className="text-lg font-semibold mb-2 flex items-center text-purple-300">
-                <MessageSquare className="h-5 w-5 mr-2" />
-                  Chat
-              </h2>
-              <div className="flex-1 overflow-y-auto mb-4 space-y-2">
-                {chats.map((msg, index) => (
-                  <div key={index} className="p-2 bg-gray-700 rounded-lg">
-                    <span className="font-semibold text-purple-400">{msg.username}: </span>
-                    <span>{msg.message}</span>
-                  </div>
-                ))}
+              <div>
+                <Drawer>
+                  <DrawerTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Info className="h-4 w-4 text-black" />
+                    </Button>
+                  </DrawerTrigger>
+                  <DrawerContent>
+                    <DrawerHeader>
+                      <DrawerTitle>Room Information</DrawerTitle>
+                      <DrawerDescription>Details about the current coding session</DrawerDescription>
+                    </DrawerHeader>
+                    <div className="p-4 space-y-4">
+                      <div>
+                        <h3 className="font-semibold">Room Name</h3>
+                        <p>{roomName}</p>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">Room ID</h3>
+                        <div className='flex'>
+                          <p>{roomId}</p>
+                          <button onClick={copyRoomId} className="ml-2 bg-white text-black hover:bg-slate-100">
+                            <Copy className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">Current Language</h3>
+                        <p>{language}</p>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">Participants</h3>
+                        <p>{users.length} user(s) in the room</p>
+                      </div>
+                      <Button onClick={onLeave} className="w-full bg-red-600 hover:bg-red-700">
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Leave Room
+                      </Button>
+                    </div>
+                  </DrawerContent>
+                </Drawer>
               </div>
-              <div className="flex">
-                <Input 
-                  className="flex-1 mr-2 bg-gray-700 border-gray-600 text-white focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50" 
-                  placeholder="Type a message..." 
-  
-                  onChange={(e) => setmsg(e.target.value)}
-                />
-                <Button onClick={() => {
-                      {msg === "" ? null : addChat(msg)}
-                      setmsg("");
-                  }
-                  } className="bg-purple-600 hover:bg-purple-700">Send</Button>
-              </div>
             </div>
-  
-            {/* Mic Toggle */}
-            <div className="p-4 bg-gradient-to-r from-gray-800 to-indigo-900">
-              <Button
-                variant={micEnabled ? "default" : "outline"}
-                className={`w-full ${micEnabled ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} text-white`}
-                onClick={() => setMicEnabled(!micEnabled)}
-              >
-                {micEnabled ? (
-                  <Mic className="h-4 w-4 mr-2" />
-                ) : (
-                  <MicOff className="h-4 w-4 mr-2" />
-                )}
-                {micEnabled ? "Mic Off" : "Mic On"}
+            <ul className="space-y-1">
+              {users.map((participant, index) => (
+                <li key={index} className="flex items-center">
+                  <div className="w-2 h-2 rounded-full bg-green-400 mr-2"></div>
+                  {participant}
+                </li>
+              ))}
+            </ul>
+          </div>
 
+          {/* Chat */}
+          <div className="flex-1 flex flex-col p-4 overflow-hidden">
+            <h2 className="text-lg font-semibold mb-2 flex items-center text-purple-300">
+              <MessageSquare className="h-5 w-5 mr-2" />
+                Chat
+            </h2>
+            <div className="flex-1 overflow-y-auto mb-4 space-y-2">
+              {chats.map((msg, index) => (
+                <div key={index} className="p-2 bg-gray-700 rounded-lg">
+                  <span className="font-semibold text-purple-400">{msg.username}: </span>
+                  <span>{msg.message}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex">
+              <Input 
+                className="flex-1 mr-2 bg-gray-700 border-gray-600 text-white focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50" 
+                placeholder="Type a message..." 
 
-              </Button>
-              <Button 
-                variant={cameraEnabled ? "default" : "outline"}
-                className={`w-full ${cameraEnabled ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} text-white`}
-                onClick={() => setCameraEnabled(!cameraEnabled)}
-              >
-                
-                {cameraEnabled ? (
-                  <Camera className="h-4 w-4 mr-2" />
-                ) : (
-                  <CameraOff className="h-4 w-4 mr-2" />
-                )}
-                {cameraEnabled ? "Camera Off" : "Camera On"}
-              </Button>
+                onChange={(e) => setmsg(e.target.value)}
+              />
+              <Button onClick={() => {
+                    {msg === "" ? null : addChat(msg)}
+                    setmsg("");
+                }
+                } className="bg-purple-600 hover:bg-purple-700">Send</Button>
             </div>
           </div>
-          <Draggable>
-            <div
-              style={{
-                width: '200px',
-                height: '150px',
-                backgroundColor: 'black', // You can style the container for your video
-                border: '1px solid #ccc',
-                position: 'absolute',
-                zIndex: 1000,
-              }}
-              className='flex'
-            >
-              <video autoPlay width={400} height={100} ref={localVideoRef} />
-              
-              <video autoPlay width={400} height={100} ref={remoteVideoRef} /> 
-            </div>
-          </Draggable>
+
+          {/* Mic Toggle */}
+          <div className="p-4 flex justify-between border-t border-gray-700">
+            <Button className="bg-gray-900 text-white hover:bg-gray-700">
+              {cameraEnabled ? <Video className="h-5 w-5" onClick={() => setCameraEnabled(false)}/> : <VideoOff className="h-5 w-5" onClick={() => setCameraEnabled(true)}/>}
+            </Button>
+            <Button className="bg-gray-900 text-white hover:bg-gray-700">
+              {micEnabled ? <MicIcon className="h-5 w-5" onClick={() => setMicEnabled(false)}/> : <MicOffIcon className="h-5 w-5" onClick={() => setMicEnabled(true)}/>}
+            </Button>
+            <Button onClick={onLeave} className="bg-red-600 hover:bg-red-700 flex items-center justify-center"> 
+              Leave
+            </Button>
+          </div>
         </div>
-        
+        <Draggable>
+          <div
+            style={{
+              width: '200px',
+              height: '150px',
+              backgroundColor: 'black', // You can style the container for your video
+              border: '1px solid #ccc',
+              position: 'absolute',
+              zIndex: 1000,
+            }}
+            className='flex'
+          >
+            <video autoPlay width={400} height={100} ref={localVideoRef} />
+            
+            <video autoPlay width={400} height={100} ref={remoteVideoRef} /> 
+          </div>
+        </Draggable>
       </div>
+      
+    </div>
+        
+      <Footer/>
+    </div>
   );
 }
 export default Room;

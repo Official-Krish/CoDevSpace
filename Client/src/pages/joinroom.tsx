@@ -134,7 +134,7 @@ const JoinRoom = () => {
       </div>
     );
   }
-  return <Room localAudioTrack={localAudioTrack} localVideoTrack={localVideoTrack} name={"Hai Kuch"} />
+  return <Room localAudioTrack={localAudioTrack} localVideoTrack={localVideoTrack} name={localStorage.getItem("name") || ""} />
 };
 
 export default JoinRoom;
