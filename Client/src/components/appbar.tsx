@@ -15,13 +15,13 @@ export const AppBar = () => {
                         <button className="font-bold text-emerald-400" onClick={() => navigate("/")}>CoDevSpace</button>
                     </div>
                     <nav className="flex gap-4 sm:gap-6">
-                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors">
+                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors text-white">
                             Features
                         </button>
-                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors">
+                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors text-white">
                             Pricing
                         </button>
-                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors">
+                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors text-white">
                             About
                         </button>
                         {Cookies.get("token") ? 

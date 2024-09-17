@@ -55,7 +55,7 @@ const CreateRoom: React.FC = () => {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            username : "admin",
+            username : localStorage.getItem("name"),
             roomName,
             roomId
         })

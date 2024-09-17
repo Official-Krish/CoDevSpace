@@ -423,7 +423,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
                   </div>
   
                   {/* Code Editor */}
-            <div className='flex-1'>
+              <div className='flex-1'>
                   <CodeMirror
                       value={code} 
                       onChange={(val)=>{handleCodeChange(val)}}
@@ -504,7 +504,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
                 ) : (
                   <MicOff className="h-4 w-4 mr-2" />
                 )}
-                {micEnabled ? "Mic On" : "Mic Off"}
+                {micEnabled ? "Mic Off" : "Mic On"}
 
 
               </Button>
