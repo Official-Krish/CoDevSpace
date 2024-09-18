@@ -1,5 +1,3 @@
-import { Footer } from "../components/footer"
-import { AppBar } from "../components/appbar"
 import { Button } from "../components/ui/button"
 import { Card, CardContent } from "../components/ui/card"
 import { Input } from "../components/ui/input"
@@ -17,7 +15,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-950 text-gray-300">
-      <AppBar/>
       
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-40 bg-gray-900">
@@ -134,7 +131,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <Footer/>
     </div>
   )
 }

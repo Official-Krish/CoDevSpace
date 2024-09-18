@@ -2,15 +2,12 @@ import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 import {useUserStore} from '../store'
-import { AppBar } from '../components/appbar';
 import { Copy, Globe, Lock, Users } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Label } from '../components/ui/label';
 import { Input } from '../components/ui/input';
 import { Switch } from '../components/ui/switch';
 import { Button } from '../components/ui/button';
-import { Footer } from '../components/footer';
-
 
 
 const CreateRoom: React.FC = () => {
@@ -78,7 +75,6 @@ const CreateRoom: React.FC = () => {
   return ( 
     <div className='bg-gray-950'>
       <div className=' text-white'>
-        <AppBar/>
       </div>
       <main className="flex-grow flex items-center justify-center p-4 bg-gray-900 min-h-screen">
         <div className="w-full max-w-4xl bg-gray-900 text-gray-100 rounded-lg shadow-lg overflow-hidden">
@@ -171,9 +167,6 @@ const CreateRoom: React.FC = () => {
           </div>
         </div>
       </main>
-      <div className='text-white'>
-        <Footer/>
-      </div>
     </div>
   );
 };

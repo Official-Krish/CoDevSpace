@@ -17,13 +17,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu"
-import { Users, MessageSquare, Code2, ChevronDown, MicIcon, MicOffIcon, Video, VideoOff, Info, LogOut, Mic, Copy } from 'lucide-react'
+import { Users, MessageSquare, Code2, ChevronDown, MicIcon, MicOffIcon, Video, VideoOff, Info, LogOut, Copy } from 'lucide-react'
 
 import { Socket, io } from "socket.io-client";
 import { WEB_SOCKET_URL } from "../../config";
 import Draggable from 'react-draggable';
-import { AppBar } from '../components/appbar';
-import { Footer } from '../components/footer';
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '../components/ui/drawer';
 
 
@@ -394,7 +392,6 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
 
     return (
       <div className='bg-gray-900'>
-        <AppBar/>
         <div className="flex flex-col h-screen bg-gray-900 text-gray-100">
           <div className="flex flex-1 overflow-hidden p-4 space-x-4">
             <div className="flex flex-col flex-1 bg-gray-900 rounded-lg shadow-xl overflow-hidden">
@@ -581,7 +578,6 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
       
     </div>
         
-      <Footer/>
     </div>
   );
 }

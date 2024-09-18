@@ -7,8 +7,6 @@ import { Label } from '../components/ui/label';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { ArrowRight, Clock, Globe, Users } from 'lucide-react';
-import { AppBar } from '../components/appbar';
-import { Footer } from '../components/footer';
 import Draggable from 'react-draggable';
 
 const JoinRoom = () => {
@@ -52,7 +50,6 @@ const JoinRoom = () => {
   if (!joined){
     return (
       <div className='bg-gray-900 h-screen'>
-        <AppBar/>
         <Draggable>
             <div
               style={{
@@ -127,9 +124,6 @@ const JoinRoom = () => {
               </Card>
             </div>
           </main>
-        </div>
-        <div>
-          <Footer/>
         </div>
       </div>
     );
