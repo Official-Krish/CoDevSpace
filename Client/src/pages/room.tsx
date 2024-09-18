@@ -20,9 +20,11 @@ import {
 import { Users, MessageSquare, Code2, ChevronDown, MicIcon, MicOffIcon, Video, VideoOff, Info, LogOut, Copy, LinkIcon } from 'lucide-react'
 
 import { Socket, io } from "socket.io-client";
-import { WEB_SOCKET_URL } from "../../config";
+import { BACKEND_URL, WEB_SOCKET_URL } from "../../config";
 import Draggable from 'react-draggable';
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '../components/ui/drawer';
+import axios from 'axios';
+import { htmlToText } from 'html-to-text';
 
 
 type chat = 
@@ -55,6 +57,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
   const [qustnAdd, setQustnAdd] = useState(false);
   const [leetCodeLink, setLeetCodeLink] = useState("");
   const [ qustnAdded, setQustnAdded ] = useState(false);
+  const [data, setData] = useState<any>(null);
 
 
   const copyRoomId = () => {
@@ -393,6 +396,57 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
 
 
 
+  {/* Get Question */}
+  const [problem, setProblem] = useState<any>(null);
+
+  const handleFetchProblem = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/v1/getQustn`,{
+        params:{
+          slug: leetCodeLink
+        }
+      });
+      const problemData = response.data;
+
+      // Check if content exists and is a string
+      const cleanedContent = problemData.content
+        ? htmlToText(problemData.content, {
+            wordwrap: 130,
+            preserveNewlines: true,
+          })
+        : '';
+
+      setProblem({
+        ...problemData,
+        content: cleanedContent,
+      });
+    } catch (err) {
+      console.error('Error fetching problem:', err);
+    }
+  };
+
+  const formatExamples = (content: string | undefined) => {
+    if (!content || typeof content !== 'string') return { description: '', examples: '', constraints: '' };
+
+    const exampleStartIndex = content.indexOf('Example');
+    const constraintStartIndex = content.indexOf('Constraints');
+
+    const description = exampleStartIndex !== -1 ? content.slice(0, exampleStartIndex).trim() : content;
+    const examples = (exampleStartIndex !== -1 && constraintStartIndex !== -1)
+        ? content.slice(exampleStartIndex, constraintStartIndex).trim()
+        : '';
+    let constraints = constraintStartIndex !== -1 ? content.slice(constraintStartIndex).trim() : '';
+
+    return { description, examples, constraints };
+  };
+
+  const formatConstraints = (constraints: string) => {
+      return constraints
+      .replace(/•\s*/g, '• ')         // Ensure space after bullet points
+      .replace(/\n\s*\n/g, '\n\n')    // Collapse multiple newlines into two
+      .trim();                        // Remove leading/trailing whitespace
+  };
+
 
   return (
     <div className='bg-gray-900'>
@@ -585,7 +639,9 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
               placeholder="Paste LeetCode link here"
               className="flex-grow mr-2 bg-gray-800 border-gray-700 text-gray-100 focus:border-emerald-400 focus:ring-emerald-400"
             />
-            <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => setQustnAdded(true)}>
+            <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => {setQustnAdded(true)
+                handleFetchProblem()
+              }}>
               <LinkIcon className="h-4 w-4 mr-2" />
               Load Question
             </Button>
@@ -596,8 +652,44 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
         {
           qustnAdded && 
             <div className="flex flex-col bg-gray-900 rounded-lg shadow-xl overflow-hidden w-4/12">
-              Hi
-            </div>
+              {problem && (
+                <div className="mt-5">
+                  <h2 className="text-xl font-semibold mb-3">{problem.title}</h2>
+
+                {problem.content && (
+                  <div className="mb-4">
+                    {/* Extract sections from content */}
+                    {(() => {
+                      const { description, examples, constraints } = formatExamples(problem.content);
+
+                      return (
+                        <>
+                          {/* Description */}
+                          <div>
+                            <h3 className="text-lg font-semibold">Description:</h3>
+                            <p className="">{description}</p>
+                          </div>
+
+                          {/* Examples */}
+                          <div className="mt-4">
+                            <h3 className="text-lg font-semibold">Examples:</h3>
+                            <p className="whitespace-pre-line leading-normal">{formatConstraints(examples)}</p>
+                          </div>
+
+                          {/* Constraints */}
+                          <div className="mt-4">
+                              <p className="whitespace-pre-line leading-normal font-bold">{formatConstraints(constraints)}</p> {/* Added leading-relaxed for more space */}
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
+
+                <h3 className="text-md font-bold">Difficulty: {problem.difficulty}</h3>
+              </div>
+            )}
+          </div>
         }
 
 
