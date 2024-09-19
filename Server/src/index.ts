@@ -21,16 +21,16 @@ const server = app.listen(3000, () => {
 });
 
 const redisClient = createClient({
-    url: process.env.REDIS_URL
+  url: process.env.REDIS_URL
 });
 
 const redisClientSubscribing = createClient({
-    url: process.env.REDIS_URL
+  url: process.env.REDIS_URL
 });
 
 redisClient.connect().catch(err => {
-    console.log(err);
-    process.exit(1);
+  console.log(err);
+  process.exit(1);
 })
 
 redisClientSubscribing.connect().catch(err => {

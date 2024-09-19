@@ -57,7 +57,6 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
   const [qustnAdd, setQustnAdd] = useState(false);
   const [leetCodeLink, setLeetCodeLink] = useState("");
   const [ qustnAdded, setQustnAdded ] = useState(false);
-  const [data, setData] = useState<any>(null);
 
 
   const copyRoomId = () => {
@@ -605,14 +604,16 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
                 <Input 
                   className="flex-1 mr-2 bg-gray-700 border-gray-600 text-white focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50" 
                   placeholder="Type a message..." 
-
+                  value={msg}
                   onChange={(e) => setmsg(e.target.value)}
                 />
                 <Button onClick={() => {
-                      {msg === "" ? null : addChat(msg)}
-                      setmsg("");
-                  }
-                  } className="bg-purple-600 hover:bg-purple-700">Send</Button>
+                    addChat(msg)
+                    setmsg("");
+                  }} 
+                  className="bg-purple-600 hover:bg-purple-700">
+                    Send
+                </Button>
               </div>
             </div>
 

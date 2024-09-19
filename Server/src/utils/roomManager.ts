@@ -150,6 +150,7 @@ export class RoomManager {
     const {roomId, username, chat} = message
     const room = this.rooms.find(room => room.roomId === roomId);
     if (!room) {
+      console.log("chat room not found")
       return;
     }
     room.chats.push({ username, message : chat})
@@ -254,11 +255,11 @@ export class RoomManager {
       
       // Create a new JSON object containing the required fields
       const resultMessage = {
-          Title: "Result",
-          stdout: parsedResult.stdout,
-          stderr: parsedResult.stderr,
-          status: parsedResult.status.description,
-          compile_output: parsedResult.compile_output
+        Title: "Result",
+        stdout: parsedResult.stdout,
+        stderr: parsedResult.stderr,
+        status: parsedResult.status.description,
+        compile_output: parsedResult.compile_output
       };
   
       // Send the resultMessageString to each user in the room
