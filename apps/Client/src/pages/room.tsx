@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu"
-import { Users, MessageSquare, Code2, ChevronDown, MicIcon, MicOffIcon, Video, VideoOff, Info, LogOut, Copy, LinkIcon } from 'lucide-react'
+import { Users, MessageSquare, Code2, ChevronDown, MicIcon, MicOffIcon, Video, VideoOff, Info, LogOut, Copy, LinkIcon, EllipsisVertical } from 'lucide-react'
 
 import { Socket, io } from "socket.io-client";
 import { BACKEND_URL, WEB_SOCKET_URL } from "../../config";
@@ -25,6 +25,7 @@ import Draggable from 'react-draggable';
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '../components/ui/drawer';
 import axios from 'axios';
 import { htmlToText } from 'html-to-text';
+import { RoomDropDown } from '../components/CodeSnippet';
 
 
 type chat = 
@@ -57,6 +58,8 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
   const [qustnAdd, setQustnAdd] = useState(false);
   const [leetCodeLink, setLeetCodeLink] = useState("");
   const [ qustnAdded, setQustnAdded ] = useState(false);
+
+  const editorRef = useRef<HTMLDivElement>(null);
 
 
   const copyRoomId = () => {
@@ -498,10 +501,14 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
                 }}>
                 Submit
               </Button>
+
+              <div>
+                <RoomDropDown reff={editorRef}/>
+              </div>
             </div>
 
             {/* Code Editor */}
-            <div className='flex-1 bg-gray-800'>
+            <div className='flex-1 bg-gray-800 overflow-scroll' ref={editorRef}>
               <CodeMirror
                 value={code} 
                 onChange={(val)=>{handleCodeChange(val)}}
@@ -511,6 +518,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
                 extensions={[getLanguageExtension(language)]}
               />
             </div>
+
 
           {/* Output Box */}
           <div className="h-1/3 p-4 bg-gray-800 border-t-2 border-gray-700">
