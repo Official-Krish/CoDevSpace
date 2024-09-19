@@ -403,7 +403,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/v1/getQustn`,{
         params:{
-          slug: leetCodeLink
+          slug: leetCodeLink.split("/problems/")[1].split("/")[0]
         }
       });
       const problemData = response.data;
@@ -441,10 +441,11 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
   };
 
   const formatConstraints = (constraints: string) => {
-      return constraints
-      .replace(/•\s*/g, '• ')         // Ensure space after bullet points
-      .replace(/\n\s*\n/g, '\n\n')    // Collapse multiple newlines into two
-      .trim();                        // Remove leading/trailing whitespace
+    return constraints
+    .replace(/^Constraints:\s*/i, '')
+    .replace(/•\s*/g, '• ')         // Ensure space after bullet points
+    .replace(/\n\s*\n/g, '\n\n')    // Collapse multiple newlines into two
+    .trim();                        // Remove leading/trailing whitespace
   };
 
 
@@ -639,7 +640,8 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
               placeholder="Paste LeetCode link here"
               className="flex-grow mr-2 bg-gray-800 border-gray-700 text-gray-100 focus:border-emerald-400 focus:ring-emerald-400"
             />
-            <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => {setQustnAdded(true)
+            <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => {
+                setQustnAdded(true)
                 handleFetchProblem()
               }}>
               <LinkIcon className="h-4 w-4 mr-2" />
@@ -653,8 +655,8 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
           qustnAdded && 
             <div className="flex flex-col bg-gray-900 rounded-lg shadow-xl overflow-hidden w-4/12">
               {problem && (
-                <div className="mt-5">
-                  <h2 className="text-xl font-semibold mb-3">{problem.title}</h2>
+                <div className="mt-5 border overflow-scroll p-4 border-gray-800">
+                  <h2 className="text-3xl font-bold mb-3 underline">{problem.title}</h2>
 
                 {problem.content && (
                   <div className="mb-4">
@@ -666,19 +668,19 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
                         <>
                           {/* Description */}
                           <div>
-                            <h3 className="text-lg font-semibold">Description:</h3>
                             <p className="">{description}</p>
                           </div>
 
                           {/* Examples */}
                           <div className="mt-4">
-                            <h3 className="text-lg font-semibold">Examples:</h3>
+                            <div className='underline text-2xl font-semibold pb-4'>Examples</div>
                             <p className="whitespace-pre-line leading-normal">{formatConstraints(examples)}</p>
                           </div>
 
                           {/* Constraints */}
                           <div className="mt-4">
-                              <p className="whitespace-pre-line leading-normal font-bold">{formatConstraints(constraints)}</p> {/* Added leading-relaxed for more space */}
+                            <div className='underline text-2xl font-semibold pb-4'>Constraints</div>
+                            <p className="whitespace-pre-line leading-normal font-medium">{formatConstraints(constraints)}</p> {/* Added leading-relaxed for more space */}
                           </div>
                         </>
                       );
@@ -686,7 +688,10 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
                   </div>
                 )}
 
-                <h3 className="text-md font-bold">Difficulty: {problem.difficulty}</h3>
+                <div className='flex'>
+                  <h3 className="text-md font-bold underline pr-1.5">Difficulty:</h3>
+                  <div>{problem.difficulty}</div>
+                </div>
               </div>
             )}
           </div>
