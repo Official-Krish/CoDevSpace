@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu"
-import { Users, MessageSquare, Code2, ChevronDown, MicIcon, MicOffIcon, Video, VideoOff, Info, LogOut, Copy, LinkIcon, EllipsisVertical } from 'lucide-react'
+import { Users, MessageSquare, Code2, ChevronDown, MicIcon, MicOffIcon, Video, VideoOff, Info, LogOut, Copy, LinkIcon, MessageCircleQuestion } from 'lucide-react'
 
 import { Socket, io } from "socket.io-client";
 import { BACKEND_URL, WEB_SOCKET_URL } from "../../config";
@@ -28,11 +28,10 @@ import { htmlToText } from 'html-to-text';
 import { RoomDropDown } from '../components/CodeSnippet';
 
 
-type chat = 
-  {
-    username:string,
-    message:string
-  }
+type chat = {
+  username:string,
+  message:string
+}
 
 export const Room = ({ localAudioTrack, localVideoTrack, name } : {
   localAudioTrack: MediaStreamTrack | null;
@@ -49,6 +48,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
   const [ roomName, setRoomName ] = useState("");
   const [ users, setUsers ] = useState<string[]>([]);
   const [ chats, setChats ] = useState<chat[]>([]);
+  const [ AIchats, setAIChats ] = useState<chat[]>([]);
   const[ result, setResult ] = useState(null);
   const [ language, setLanguage ] = useState("Select Language");
   const [ code , setCode ] = useState("");
@@ -58,6 +58,9 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
   const [qustnAdd, setQustnAdd] = useState(false);
   const [leetCodeLink, setLeetCodeLink] = useState("");
   const [ qustnAdded, setQustnAdded ] = useState(false);
+  const [ AskAi, setAskAi ] = useState(false);
+  const [ AiResponse, setAiResponse ] = useState("");
+  const [ AIchat, setAIchat ] = useState("");
 
   const editorRef = useRef<HTMLDivElement>(null);
 
@@ -596,28 +599,72 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
 
             {/* Chat */}
             <div className="flex-1 flex flex-col p-4 overflow-hidden">
-              <h2 className="text-lg font-semibold mb-2 flex items-center text-purple-300">
-                <MessageSquare className="h-5 w-5 mr-2" />
+              <div className='flex justify-between items-center'>
+                <button className={`text-lg font-semibold mb-2 flex items-center ${!AskAi ? "text-emerald-400" : "text-purple-300"}`} onClick={() => setAskAi(false)}>
+                  <MessageSquare className={`h-5 w-5 mr-2`} />
                   Chat
-              </h2>
+                </button>
+                <button className={`text-lg font-semibold mb-2 flex items-center ${AskAi ? "text-emerald-400" : "text-purple-300"}`} onClick={() => setAskAi(true)}>
+                  <MessageCircleQuestion className="h-5 w-5 mr-2" />
+                  Ask AI
+                </button>
+              </div>
               <div className="flex-1 overflow-y-auto mb-4 space-y-2">
-                {chats.map((msg, index) => (
-                  <div key={index} className="p-2 bg-gray-700 rounded-lg">
-                    <span className="font-semibold text-purple-400">{msg.username}: </span>
-                    <span>{msg.message}</span>
+                {AskAi ? 
+                  <div>
+                    {AIchats.map((msg, index) => (
+                      <div key={index} className="p-2 bg-gray-700 rounded-lg">
+                        <span className="font-semibold text-purple-400">{msg.username}: {AIchat}</span>
+                        {!AiResponse ? <span>Assistant: Loading...</span> : <span>Assistant: {AiResponse}</span>}
+                      </div>
+                    ))}
                   </div>
-                ))}
+                  :
+                  <div>
+                    {chats.map((msg, index) => (
+                      <div key={index} className="p-2 bg-gray-700 rounded-lg">
+                        <span className="font-semibold text-purple-400">{msg.username}: </span>
+                        <span>{msg.message}</span>
+                      </div>
+                    ))}
+                  </div>
+                }
               </div>
               <div className="flex">
                 <Input 
-                  className="flex-1 mr-2 bg-gray-700 border-gray-600 text-white focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50" 
-                  placeholder="Type a message..." 
-                  value={msg}
-                  onChange={(e) => setmsg(e.target.value)}
+                  className="flex-1 mr-2 bg-gray-700 border-gray-600 text-white focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50"
+                  placeholder={AskAi ? "Ask AI..." : "Type a message..."}
+                  value={AskAi ? AIchat : msg}
+                  onChange={(e) => {
+                    if(!AskAi){
+                      setmsg(e.target.value)
+                    }
+                    else{
+                      setAIchat(e.target.value)
+                      setAIChats((prevChats) => {
+                        const newChat = { username: username, message: e.target.value };
+                        return [...prevChats, newChat];
+                      });
+                    }
+                  }}
                 />
-                <Button onClick={() => {
-                    addChat(msg)
-                    setmsg("");
+                <Button onClick={async () => {
+                    if(!AskAi){
+                      addChat(msg)
+                      setmsg("");
+                    }
+                    else{
+                      const res = await axios.post(`${BACKEND_URL}/api/v1/AIchat`,{
+                        chat: AIchat,
+                        code: code
+                      })
+                      setAIchat("");
+                      setAiResponse(res.data.response);
+                      setAIChats((prevChats) => {
+                        const newChat = { username: "AI", message: AiResponse };
+                        return [...prevChats, newChat];
+                      });
+                    }
                   }} 
                   className="bg-purple-600 hover:bg-purple-700">
                     Send

@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import { CameraIcon, EllipsisVertical } from "lucide-react";
 import { toJpeg } from "html-to-image";
