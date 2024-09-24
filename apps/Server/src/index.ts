@@ -7,6 +7,7 @@ import { userRouter } from './routes/user';
 import { authMiddleware } from './middleware';
 import cookieParser from 'cookie-parser';
 import { qustnRouter } from './routes/getQstn';
+import { aiRouter } from './routes/AiChat';
 
 const app = express();
 app.use(express.json());
@@ -88,6 +89,6 @@ app.post("/api/create", (req , res ) => {
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/getQustn", qustnRouter);
-
+app.use("/api/v1/AIchat", aiRouter);
 
 
