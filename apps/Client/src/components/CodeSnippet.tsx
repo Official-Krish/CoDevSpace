@@ -29,12 +29,11 @@ export default function CodeSnippet({
         }
     };
     return (
-        <div>
+        <button className="flex hover:text-gray-400" onClick={handleTakeScreenshot}>
             <CameraIcon
-                className="cursor-pointer hover:text-gray-400 shadow-lg"
-                onClick={handleTakeScreenshot}
-            />
-        </div>
+                className="shadow-lg"/>
+            <div className="pl-2 pr-1 font-semibold text-md">Save</div>
+        </button>
     );
 }
 
@@ -49,7 +48,6 @@ export const RoomDropDown = ({reff} : {reff: React.RefObject<HTMLDivElement>}) =
                 <DropdownMenuItem>
                     <div className="text-white pl-1 flex">
                         <CodeSnippet reff={reff} />
-                        <div className="pl-2 pr-1 font-semibold text-md">Save</div>
                     </div>
                 </DropdownMenuItem>
             </DropdownMenuContent>
