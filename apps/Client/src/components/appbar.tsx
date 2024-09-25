@@ -8,13 +8,15 @@ export const AppBar = () => {
     
     return (
         <div>
-            <header className="px-4 lg:px-6 h-14 flex items-center border-b border-gray-800 bg-gray-900">
-                <div className="max-w-6xl mx-auto w-full flex justify-between items-center">
-                    <div className="flex items-center justify-center">
+            <header className="h-16 border-b border-gray-800 bg-gray-900 px-8">
+                <div className="flex justify-between items-center h-full">
+                    <div className="flex items-center">
                         <Code2 className="h-6 w-6 mr-2 text-emerald-400" />
-                        <button className="font-bold text-emerald-400" onClick={() => navigate("/")}>CoDevSpace</button>
+                        <button className="font-bold text-emerald-400" onClick={() => navigate("/")}>
+                            CoDevSpace
+                        </button>
                     </div>
-                    <nav className="flex gap-4 sm:gap-6">
+                    <nav className="flex gap-6 items-center">
                         <button className="text-sm font-medium hover:text-emerald-400 transition-colors text-white">
                             Features
                         </button>
@@ -24,11 +26,11 @@ export const AppBar = () => {
                         <button className="text-sm font-medium hover:text-emerald-400 transition-colors text-white">
                             About
                         </button>
-                        {Cookies.get("token") ? 
+                        {Cookies.get("token") ? (
                             <div className="flex items-center">
                                 <UserDropdown />
                             </div>
-                            : 
+                        ) : (
                             <div className="flex gap-4"> 
                                 <button className="text-sm font-medium hover:text-emerald-400 transition-colors" onClick={() => navigate("/signin")}>
                                     Sign In
@@ -37,7 +39,7 @@ export const AppBar = () => {
                                     Sign Up
                                 </button>
                             </div>
-                        }
+                        )}
                     </nav>
                 </div>
             </header>
