@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import { Router } from "express";
 import { generateResponse } from "../utils/genAI";
 
@@ -7,8 +10,7 @@ aiRouter.post("/", async (req, res) => {
     try {
 		if (!process.env.OPENAI_API_KEY) {
 			return res.status(403).json({
-				title: "",
-				article: "This feature is disabled.",
+				response: "This feature is disabled.",
 			});
 		}
 		const body = await req.body;
