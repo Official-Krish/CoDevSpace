@@ -1,5 +1,5 @@
 {
-  "name": "db",
+  "name": "@repo/db",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -9,8 +9,15 @@
   "prisma": {
     "seed": "pnpm dlx ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
+  "exports": {
+    "./client": "./src/index.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@prisma/client": "5.20.0",
+    "prisma": "^5.20.0"
+  }
 }

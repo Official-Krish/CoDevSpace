@@ -1,4 +1,4 @@
-function checkNeonNumber(num1) {
+public static int maxElement(List<Integer> arr) {
     // Implementation goes here
     return result;
 }

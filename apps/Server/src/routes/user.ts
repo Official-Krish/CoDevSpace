@@ -2,11 +2,10 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 import { Router } from "express";
-import { prisma } from "../utils/db";
 import { LoginSchema, SignupSchema } from "../types";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
+import  prisma  from '../utils/db';
 export const userRouter = Router();
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";

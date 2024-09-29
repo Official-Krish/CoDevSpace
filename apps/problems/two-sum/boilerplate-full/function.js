@@ -1,9 +1,8 @@
+##USER_CODE_HERE##
 
-        ##USER_CODE_HERE##
-        
-        const input = require('fs').readFileSync('/dev/stdin', 'utf8').trim().split('\n').join(' ').split(' ');
-        const num1 = parseInt(input.shift());
+const input = require('fs').readFileSync('/dev/problems/two-sum/tests/inputs/##INPUT_FILE_INDEX##.txt', 'utf8').trim().split('\n').join(' ').split(' ');
+const num1 = parseInt(input.shift());
   const num2 = parseInt(input.shift());
-        int result = (num1, num2);
-        console.log(result);
-        
+const result = sum(num1, num2);
+console.log(result);
+    
