@@ -31,7 +31,7 @@ export const AppBar = () => {
                                 <UserDropdown />
                             </div>
                         ) : (
-                            <div className="flex gap-4"> 
+                            <div className="flex gap-4 text-white"> 
                                 <button className="text-sm font-medium hover:text-emerald-400 transition-colors" onClick={() => navigate("/signin")}>
                                     Sign In
                                 </button>
