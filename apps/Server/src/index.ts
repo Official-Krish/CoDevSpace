@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 import { qustnRouter } from './routes/getQstn';
 import { aiRouter } from './routes/AiChat';
 import { problemRouter } from './routes/getProblem';
+import { SubmissionRouter } from './routes/Submission';
 
 const app = express();
 app.use(express.json());
@@ -92,5 +93,6 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/getQustn", qustnRouter);
 app.use("/api/v1/AIchat", aiRouter);
 app.use("/api/v1/problem", problemRouter);
+app.use("/api/v1/submission", SubmissionRouter)
 
 
