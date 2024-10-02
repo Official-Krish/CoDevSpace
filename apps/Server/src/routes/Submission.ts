@@ -99,3 +99,27 @@ SubmissionRouter.post("/submit", async (req, res) => {
         id : submission.id
     })
 });
+
+SubmissionRouter.get("/bulk", (req, res) => {
+    const id = req.query.problemId;
+
+    if (!id) {
+        return res.status(400).json({ message: "Invalid request" });
+    }
+
+    const submissions = prisma.submission.findMany({
+        where: {
+            problemId: id as string,
+            userId: req.body.userId
+        },
+        take: 10,
+        include: {
+            testcases: true
+        },
+        orderBy: {
+            createdAt: "desc"
+        }
+    })
+
+    return res.json(submissions);
+})

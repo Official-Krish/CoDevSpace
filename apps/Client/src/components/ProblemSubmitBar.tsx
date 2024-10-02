@@ -9,7 +9,8 @@ import { Button } from "./ui/button";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { CheckIcon, CircleX, ClockIcon } from "lucide-react";
-import { BACKEND_URL } from "config";
+import { BACKEND_URL } from "../../config";
+import { Submission, SubmissionsTable } from "./SubmissionTable";
 
 export interface IProblem {
   id: string;
@@ -72,14 +73,16 @@ const SubmitBar = ({problem} : {problem: any}) => {
   );
 };
 
-function Submissions({ problem }: { problem: any }) {
-  const [submissions, setSubmissions] = useState<any[]>([]);
+function Submissions({ problem }: { problem: IProblem }) {
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axios.get(
-        ``
-      );
+      const response = await axios.get( `${BACKEND_URL}/api/v1/submission/bulk?problemId=${problem.id}`, {
+        params: {
+          userId: "1",
+        }
+      });
       setSubmissions(response.data.submissions || []);
     };
     fetchData();
@@ -87,7 +90,7 @@ function Submissions({ problem }: { problem: any }) {
 
   return (
     <div>
-      
+      <SubmissionsTable submissions={submissions} />
     </div>
   );
 }
