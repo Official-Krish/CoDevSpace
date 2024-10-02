@@ -1,6 +1,6 @@
 import { Problems } from "../components/problems";
 
-const problems = () => {
+const ProblemsTable = () => {
   return (
     <main>
       <Problems />
@@ -8,4 +8,4 @@ const problems = () => {
   );
 }
 
-export default problems;
+export default ProblemsTable;

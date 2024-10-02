@@ -27,6 +27,8 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-switch": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
+    "@react-three/drei": "^9.114.0",
+    "@react-three/fiber": "^8.17.8",
     "@types/node": "^20.12.11",
     "@uiw/react-codemirror": "^4.22.1",
     "class-variance-authority": "^0.7.0",
@@ -48,15 +50,17 @@
     "socket.io-client": "^4.7.5",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
+    "three": "^0.169.0",
     "uuidv4": "^6.2.13",
     "vaul": "^0.9.3",
-    "zustand": "^4.5.2"
+    "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "@types/html-to-text": "^9.0.4",
     "@types/js-cookie": "^3.0.6",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
+    "@types/three": "^0.169.0",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-react": "^4.2.1",

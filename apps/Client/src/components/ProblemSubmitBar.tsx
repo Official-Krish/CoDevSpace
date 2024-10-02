@@ -9,32 +9,44 @@ import { Button } from "./ui/button";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { CheckIcon, CircleX, ClockIcon } from "lucide-react";
+import { BACKEND_URL } from "config";
+
+export interface IProblem {
+  id: string;
+  title: string;
+  description: string;
+  slug: string;
+  defaultCode: {
+    languageId: number;
+    code: string;
+  }[];
+}
 
 enum SubmitStatus {
-    SUBMIT = "SUBMIT",
-    PENDING = "PENDING",
-    ACCEPTED = "ACCEPTED",
-    FAILED = "FAILED",
+  SUBMIT = "SUBMIT",
+  PENDING = "PENDING",
+  ACCEPTED = "ACCEPTED",
+  FAILED = "FAILED",
 }
 const LANGUAGE_MAPPING: {
-    [key: string]: {
-      judge0: number;
-      internal: number;
-      name: string;
-      monaco: string;
-    };
-  } = {
-    js: { judge0: 63, internal: 1, name: "Javascript", monaco: "javascript" },
-    cpp: { judge0: 54, internal: 2, name: "C++", monaco: "cpp" },
-    rs: { judge0: 73, internal: 3, name: "Rust", monaco: "rust" },
-    java: { judge0: 62, internal: 4, name: "Java", monaco: "java" },
+  [key: string]: {
+    judge0: number;
+    internal: number;
+    name: string;
+    monaco: string;
+  };
+} = {
+  js: { judge0: 63, internal: 1, name: "Javascript", monaco: "javascript" },
+  cpp: { judge0: 54, internal: 2, name: "C++", monaco: "cpp" },
+  rs: { judge0: 73, internal: 3, name: "Rust", monaco: "rust" },
+  java: { judge0: 62, internal: 4, name: "Java", monaco: "java" },
 };
 
 const SubmitBar = ({problem} : {problem: any}) => {
-    const [activeTab, setActiveTab] = useState("problem");
+  const [activeTab, setActiveTab] = useState("problem");
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
+    <div className="bg-white rounded-lg shadow-md p-6">
       <div className="grid gap-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -82,10 +94,8 @@ function Submissions({ problem }: { problem: any }) {
 
 function SubmitProblem({
   problem,
-  contestId,
 }: {
-  problem: any;
-  contestId?: string;
+  problem: IProblem;
 }) {
   const [language, setLanguage] = useState(
     Object.keys(LANGUAGE_MAPPING)[0] as string
@@ -93,24 +103,19 @@ function SubmitProblem({
   const [code, setCode] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<string>(SubmitStatus.SUBMIT);
   const [testcases, setTestcases] = useState<any[]>([]);
-  const [token, setToken] = useState<string>("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const defaultCode: { [key: string]: string } = {};
-    if (Array.isArray(problem.defaultCode)) {
-        problem.defaultCode.forEach((code : any) => {
-            const language = Object.keys(LANGUAGE_MAPPING).find(
-                (language) => LANGUAGE_MAPPING[language]?.internal === code.languageId
-            );
-            if (!language) return;
-            defaultCode[language] = code.code;
-        });
-    } else {
-        console.error("problem.defaultCode is not an array:", problem.defaultCode);
-    }
+      problem.defaultCode.forEach((code ) => {
+        const language = Object.keys(LANGUAGE_MAPPING).find(
+          (language) => LANGUAGE_MAPPING[language]?.internal === code.languageId
+        );
+        if (!language) return;
+        defaultCode[language] = code.code;
+      });
     setCode(defaultCode);
-    }, [problem]);
+  }, [problem]);
 
 
   async function pollWithBackoff(id: string, retries: number) {
@@ -120,7 +125,7 @@ function SubmitProblem({
       return;
     }
 
-    const response = await axios.get(``);
+    const response = await axios.get(`${BACKEND_URL}/api/v1/submission/?id=${id}`);
 
     console.log(response.data.submission);
     if (response.data.submission.status === "PENDING") {
@@ -143,16 +148,14 @@ function SubmitProblem({
   }
 
   async function submit() {
-    const navigate = useNavigate();
     setStatus(SubmitStatus.PENDING);
     setTestcases((t) => t.map((tc) => ({ ...tc, status: "PENDING" })));
     try {
-      const response = await axios.post(``, {
+      const response = await axios.post(`${BACKEND_URL}/api/v1/submission/submit`, {
         code: code[language],
         languageId: language,
         problemId: problem.id,
-        activeContestId: contestId,
-        token: token,
+        userId: "1",
       });
       pollWithBackoff(response.data.id, 10);
     } catch (e) {

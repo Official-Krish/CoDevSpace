@@ -6,7 +6,7 @@ import CreateRoom from './pages/createroom'
 import Home from './pages/home'
 import SignUpPage from './pages/Signup'
 import SignInPage from './pages/Signin'
-import problems from './pages/Problems'
+import ProblemsTable from './pages/Problems'
 import ProblemDetail from './pages/ProblemDetail'
 
 function App() {
@@ -19,7 +19,7 @@ function App() {
         <Route path='/create' element={<CreateRoom />}></Route>
         <Route path='/Signup' element={<SignUpPage />}></Route>
         <Route path='/Signin' element={<SignInPage />}></Route>
-        <Route path='/problems' element={problems()}></Route>
+        <Route path='/problems' element={<ProblemsTable />}></Route>
         <Route path='/problem/:id' element={<ProblemDetail />}></Route>
       </Routes>
     </>
