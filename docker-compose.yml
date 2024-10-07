@@ -1,25 +1,6 @@
 version: '3.5'
 
 services:
-  # Next Auth Not Working in Docker
-
-  # app:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: app-container
-  #   environment:
-  #     - DATABASE_URL=postgresql://postgres:supersecurepassword@db:5432/algo-arena
-  #   ports:
-  #     - '3000:3000'  # Next.js app
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #   volumes:
-  #     - type: bind
-  #       source: .
-  #       target: /usr/src/app
-
   db:
     image: postgres:alpine
     container_name: db
