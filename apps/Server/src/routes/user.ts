@@ -45,7 +45,7 @@ userRouter.post("/signup", async (req, res) => {
         );
 
         res.cookie('token', token);
-        return res.status(200).json({ msg: "User created successfully" });
+        return res.status(200).json({ msg: "User created successfully" , userId : user.id});
     }
 });
 
@@ -79,7 +79,8 @@ userRouter.post("/login", async (req, res) => {
             );
 
             res.cookie('token', token);
-            return res.status(200).json({ msg : "login successful" , name : user.name});
+            return res.status(200).json({ msg : "login successful" , name : user.name, userId : user.id});
         }
     }
 });
+
