@@ -32,6 +32,7 @@ export default function SignInPage() {
         if(handleSubmit.status === 200){
             console.log("User logged in successfully");
             localStorage.setItem("name", handleSubmit.data.name);
+            localStorage.setItem("userId", handleSubmit.data.userId)
             navigate("/create")
         }
         else{

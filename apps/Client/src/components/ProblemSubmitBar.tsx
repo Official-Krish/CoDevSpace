@@ -78,11 +78,7 @@ function Submissions({ problem }: { problem: IProblem }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axios.get( `${BACKEND_URL}/api/v1/submission/bulk?problemId=${problem.id}`, {
-        params: {
-          userId: "1",
-        }
-      });
+      const response = await axios.get( `${BACKEND_URL}/api/v1/submission/bulk?problemId=${problem.id}`);
       setSubmissions(response.data.submissions || []);
     };
     fetchData();
@@ -110,7 +106,7 @@ function SubmitProblem({
 
   useEffect(() => {
     const defaultCode: { [key: string]: string } = {};
-      problem.defaultCode.forEach((code ) => {
+      problem?.defaultCode?.forEach((code ) => {
         const language = Object.keys(LANGUAGE_MAPPING).find(
           (language) => LANGUAGE_MAPPING[language]?.internal === code.languageId
         );
@@ -128,9 +124,11 @@ function SubmitProblem({
       return;
     }
 
-    const response = await axios.get(`${BACKEND_URL}/api/v1/submission/?id=${id}`);
+    const response = await axios.get(`${BACKEND_URL}/api/v1/submission?id=${id}`);
 
-    console.log(response.data.submission);
+    console.log("pollWithBackoff", response.data.submission);
+
+
     if (response.data.submission.status === "PENDING") {
       setTestcases(response.data.submission.testcases);
       await new Promise((resolve) => setTimeout(resolve, 2.5 * 1000));
@@ -153,12 +151,15 @@ function SubmitProblem({
   async function submit() {
     setStatus(SubmitStatus.PENDING);
     setTestcases((t) => t.map((tc) => ({ ...tc, status: "PENDING" })));
+    console.log("language", language);
+    console.log("code", code[language]);
+    console.log("problemId", problem.id);
     try {
       const response = await axios.post(`${BACKEND_URL}/api/v1/submission/submit`, {
         code: code[language],
         languageId: language,
         problemId: problem.id,
-        userId: "1",
+        userId: localStorage.getItem("userId"),
       });
       pollWithBackoff(response.data.id, 10);
     } catch (e) {

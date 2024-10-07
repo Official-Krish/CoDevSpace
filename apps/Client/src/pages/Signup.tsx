@@ -39,6 +39,7 @@ export default function SignUpPage() {
         if(handleSubmit.status === 200){
             console.log("User created successfully");
             localStorage.setItem("name", name);
+            localStorage.setItem("userId", handleSubmit.data.userId)
             navigate("/create")
         }
         else{
