@@ -14,6 +14,7 @@ import {
 } from "../components/ui/select";
 import axios from 'axios';
 import { BACKEND_URL } from '../../config';
+import { useUserStore } from '../store';
 
 export default function CreateContest() {
   const [roomName, setRoomName] = useState('');
@@ -21,6 +22,7 @@ export default function CreateContest() {
   const navigate = useNavigate();
   const [problemId, setProblemId] = useState('');
   const [problems, setProblems] = useState<any[]>([]);
+  const { setRoomID } = useUserStore();
 
   const copyRoomId = () => {
     navigator.clipboard.writeText(roomId);
@@ -58,6 +60,7 @@ export default function CreateContest() {
         })
       });
       if (response.ok) {
+        setRoomID(roomId)
         localStorage.setItem("roomId", roomId);
         navigate("/joinContest");
       } else {

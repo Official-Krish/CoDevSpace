@@ -43,7 +43,7 @@ const LANGUAGE_MAPPING: {
   java: { judge0: 62, internal: 4, name: "Java", monaco: "java" },
 };
 
-const SubmitBar = ({problem} : {problem: any}) => {
+const SubmitBar = ({problem, isContest} : {problem: IProblem, isContest: boolean}) => {
   const [activeTab, setActiveTab] = useState("problem");
 
   return (
@@ -65,7 +65,7 @@ const SubmitBar = ({problem} : {problem: any}) => {
           </div>
         </div>
         <div className={`${activeTab === "problem" ? "" : "hidden"}`}>
-          <SubmitProblem problem={problem} />
+          <SubmitProblem problem={problem} isContest={isContest} />
         </div>
         {activeTab === "submissions" && <Submissions problem={problem} />}
       </div>
@@ -93,9 +93,14 @@ function Submissions({ problem }: { problem: IProblem }) {
 
 function SubmitProblem({
   problem,
+  isContest,
 }: {
   problem: IProblem;
+  isContest: boolean;
 }) {
+  if(problem.defaultCode === undefined) {
+    return <div>Loading...</div>;
+  }
   const [language, setLanguage] = useState(
     Object.keys(LANGUAGE_MAPPING)[0] as string
   );
@@ -106,7 +111,7 @@ function SubmitProblem({
 
   useEffect(() => {
     const defaultCode: { [key: string]: string } = {};
-      problem?.defaultCode?.forEach((code ) => {
+      problem.defaultCode.forEach((code ) => {
         const language = Object.keys(LANGUAGE_MAPPING).find(
           (language) => LANGUAGE_MAPPING[language]?.internal === code.languageId
         );
@@ -117,7 +122,7 @@ function SubmitProblem({
   }, [problem]);
 
 
-  async function pollWithBackoff(id: string, retries: number) {
+  async function pollWithBackoff(id: string, retries: number, isContest: boolean) {
     if (retries === 0) {
       setStatus(SubmitStatus.SUBMIT);
       toast.error("Not able to get status ");
@@ -132,11 +137,15 @@ function SubmitProblem({
     if (response.data.submission.status === "PENDING") {
       setTestcases(response.data.submission.testcases);
       await new Promise((resolve) => setTimeout(resolve, 2.5 * 1000));
-      pollWithBackoff(id, retries - 1);
+      pollWithBackoff(id, retries - 1, isContest);
     } else {
       if (response.data.submission.status === "AC") {
         setStatus(SubmitStatus.ACCEPTED);
         setTestcases(response.data.submission.testcases);
+        {isContest && axios.post(`${BACKEND_URL}/api/v1/contest/poll`, {
+          userId: localStorage.getItem("userId")
+        }
+        )}
         toast.success("Accepted!");
         return;
       } else {
@@ -148,7 +157,7 @@ function SubmitProblem({
     }
   }
 
-  async function submit() {
+  async function submit(isContest: boolean) {
     setStatus(SubmitStatus.PENDING);
     setTestcases((t) => t.map((tc) => ({ ...tc, status: "PENDING" })));
     console.log("language", language);
@@ -161,7 +170,7 @@ function SubmitProblem({
         problemId: problem.id,
         userId: localStorage.getItem("userId"),
       });
-      pollWithBackoff(response.data.id, 10);
+      pollWithBackoff(response.data.id, 10, isContest);
     } catch (e) {
       //@ts-ignore
       toast.error(e.response.statusText);
@@ -212,7 +221,7 @@ function SubmitProblem({
           disabled={status === SubmitStatus.PENDING}
           type="submit"
           className="mt-4 align-right"
-          onClick={Cookies.get("token") ? submit : () => navigate("/signin")}
+          onClick={Cookies.get("token") ? () => submit(isContest) : () => navigate("/signin")}
         >
           {Cookies.get("token")
             ? status === SubmitStatus.PENDING
