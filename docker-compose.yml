@@ -24,7 +24,7 @@ services:
       - ./judge0.conf:/judge0.conf:ro
       - type: bind
         source: "./apps/problems"
-        target: /dev/problems
+        target: /apps/problems
     ports:
       - "2358:2358"
     privileged: true
@@ -39,12 +39,26 @@ services:
       - ./judge0.conf:/judge0.conf:ro
       - type: bind
         source: "./apps/problems"
-        target: /dev/problems
+        target: /apps/problems
     privileged: true
     restart: always
     logging:
       driver: none
 
+  redis:
+    image: redis:7.2.4
+    command: [
+      "bash", "-c",
+      'docker-entrypoint.sh --appendonly no --requirepass "$$REDIS_PASSWORD"'
+    ]
+    env_file: judge0.conf
+    restart: always
+    ports: 
+      - '6379:6379'
+    logging:
+      driver: none
+    volumes:
+      - cache:/data
 volumes:
   postgres_data:
   cache:
