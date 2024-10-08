@@ -17,14 +17,14 @@ export const AppBar = () => {
                         </button>
                     </div>
                     <nav className="flex gap-6 items-center">
-                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors text-white">
-                            Features
+                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors text-white" onClick={() => navigate("/problems")}>
+                            Problems
                         </button>
-                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors text-white">
-                            Pricing
+                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors text-white" onClick={() => navigate("/create")}>
+                            Create
                         </button>
-                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors text-white">
-                            About
+                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors text-white" onClick={() => navigate("/join")}>
+                            Join
                         </button>
                         {Cookies.get("token") ? (
                             <div className="flex items-center">

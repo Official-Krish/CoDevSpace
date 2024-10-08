@@ -8,6 +8,8 @@ import SignUpPage from './pages/Signup'
 import SignInPage from './pages/Signin'
 import ProblemsTable from './pages/Problems'
 import ProblemDetail from './pages/ProblemDetail'
+import CreateContest from './pages/CreateContest'
+import JoinContest from './pages/JoinContest'
 
 function App() {
 
@@ -21,6 +23,8 @@ function App() {
         <Route path='/Signin' element={<SignInPage />}></Route>
         <Route path='/problems' element={<ProblemsTable />}></Route>
         <Route path='/problem/:id' element={<ProblemDetail />}></Route>
+        <Route path='/createContest' element={<CreateContest />}></Route>
+        <Route path='/joinContest' element={<JoinContest />}></Route>
       </Routes>
     </>
   )

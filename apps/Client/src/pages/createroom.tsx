@@ -37,9 +37,6 @@ const CreateRoom: React.FC = () => {
   const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
     console.log("Submit clicked!")
     event.preventDefault();
-    // Handle room creation here, you can use roomName and roomId
-    console.log('Room Name:', roomName);
-    console.log('Room ID:', roomId);
     if(!roomId || !roomName){
         alert("Fill name and id")
         return;
