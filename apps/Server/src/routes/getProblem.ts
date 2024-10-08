@@ -18,11 +18,14 @@ problemRouter.get("/getProblems", async (req, res) => {
 
 problemRouter.get("/getProblem/:id", async (req, res) => {
     try {
-        const problem = await prisma.problem.findUnique({
+        const problem = await prisma.problem.findFirst({
             where: {
                 id: (req.params.id),
             },
-        });
+            include: {
+                defaultCode: true
+            }
+        }); 
         res.json(problem);
     } catch (error) {
         console.error("Error fetching problem:", error);

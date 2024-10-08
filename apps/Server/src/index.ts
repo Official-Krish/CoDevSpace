@@ -10,6 +10,7 @@ import { aiRouter } from './routes/AiChat';
 import { problemRouter } from './routes/getProblem';
 import { SubmissionRouter } from './routes/Submission';
 import { ContestRoomManager } from './utils/ContestRoomManager';
+import { ContestRouter } from './routes/contest';
 
 const app = express();
 app.use(express.json());
@@ -115,5 +116,6 @@ app.use("/api/v1/getQustn", qustnRouter);
 app.use("/api/v1/AIchat", aiRouter);
 app.use("/api/v1/problem", problemRouter);
 app.use("/api/v1/submission", SubmissionRouter)
+app.use("/api/v1/contest", ContestRouter);
 
 

@@ -21,7 +21,7 @@ const LANGUAGE_MAPPING: Record<string, {
   java: { judge0: 62, internal: 4, name: "Java", monaco: "java" },
 };
 
-const JUDGE0_URL = "http://localhost:2358";
+const JUDGE0_URL = process.env.JUDGE0_URL;
 
 SubmissionRouter.get("/", async (req, res) => {
   const { id } = req.query;
@@ -50,7 +50,7 @@ SubmissionRouter.get("/", async (req, res) => {
 SubmissionRouter.post("/submit", async (req, res) => {
     const submissionInput = req.body;
     const { problemId, languageId, code, userId } = submissionInput;
-    console.log(languageId, "languageId")
+    console.log(problemId, "problemId")
 
     // Basic validation
     if (!problemId || !code || !userId || !LANGUAGE_MAPPING[languageId]) {
@@ -71,9 +71,10 @@ SubmissionRouter.post("/submit", async (req, res) => {
 
         problem.fullBoilerplateCode = problem.fullBoilerplateCode.replace("##USER_CODE_HERE##", code);
         console.log("fullBoilerplateCode", problem);
+        console.log("problem output", problem.outputs);
 
         const response = await axios.post(
-            `${JUDGE0_URL}/submissions/batch?base64_encoded=false&wait=false`,
+            `${JUDGE0_URL}/submissions/batch?base64_encoded=false&`,
             {
               submissions: problem.inputs.map((input, index) => ({
                 language_id: LANGUAGE_MAPPING[languageId]?.judge0,
