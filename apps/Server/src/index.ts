@@ -4,12 +4,12 @@ import { WebSocketServer } from 'ws';
 import { RoomManager } from './utils/roomManager';
 import cors from 'cors';
 import { userRouter } from './routes/user';
-import { authMiddleware } from './middleware';
 import cookieParser from 'cookie-parser';
 import { qustnRouter } from './routes/getQstn';
 import { aiRouter } from './routes/AiChat';
 import { problemRouter } from './routes/getProblem';
 import { SubmissionRouter } from './routes/Submission';
+import { ContestRoomManager } from './utils/ContestRoomManager';
 
 const app = express();
 app.use(express.json());
@@ -66,6 +66,10 @@ wss.on('connection', function connection(ws) {
     else if(message.Title==="Submitted"){
       RoomManager.getInstance().handleSubmitted(message)
     }
+
+    else if (message.Title === "Join-Contest-Room"){
+      ContestRoomManager.getInstance().handleUserJoined(message, ws);
+    }
   });
 
   ws.send(JSON.stringify({Title : "Greet" , msg:'Hello! Message From Server!!'}));
@@ -80,13 +84,30 @@ app.post("/api/create", (req , res ) => {
     }
 
     try{
-        RoomManager.getInstance().create(req.body);
+      RoomManager.getInstance().create(req.body);
+      res.status(200).send("Room created");
+      console.log("Room created");
+    } catch(e){
+        res.status(500).send("Error creating room");
+    }
+})
+
+app.post("/api/createContest", (req , res ) => {
+    const { username , roomName, roomId, problemId } = req.body;
+
+    if(!username || !roomName || !roomId || !problemId){
+        res.status(400).send("Invalid request");
+        return;
+    }
+
+    try{
+        ContestRoomManager.getInstance().create(req.body);
         res.status(200).send("Room created");
         console.log("Room created");
     } catch(e){
         res.status(500).send("Error creating room");
     }
-})
+});
 
 
 app.use("/api/v1/user", userRouter);
