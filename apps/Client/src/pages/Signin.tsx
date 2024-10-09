@@ -47,7 +47,7 @@ export default function SignInPage() {
                 <CardHeader className="space-y-1 flex flex-col items-center">
                 <div className="flex items-center justify-center mb-4">
                     <Code2 className="h-8 w-8 mr-2 text-emerald-400" />
-                    <span className="font-bold text-2xl text-emerald-400">CollabCode</span>
+                    <span className="font-bold text-2xl text-emerald-400">CoDevSpace</span>
                 </div>
                 <CardTitle className="text-2xl font-bold text-center">Sign in to your account</CardTitle>
                 </CardHeader>

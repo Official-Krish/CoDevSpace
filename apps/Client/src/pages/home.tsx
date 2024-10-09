@@ -141,7 +141,7 @@ leaderboard.update(user.score);`}</code>
         </section>
         <section className="py-20 lg:py-32">
           <div className="container mx-auto px-4 lg:px-8">
-            <div className="bg-gradient-to-r from-blue-600 to-teal-600 rounded-2xl p-12 lg:p-20 text-center">
+            <div className="bg-gradient-to-r from-blue-600 to-teal-600 rounded-2xl p-12 lg:p-20 text-center animate-out">
               <h2 className="text-3xl lg:text-5xl font-bold mb-6">Ready to Join the Coding Elite?</h2>
               <p className="text-xl text-gray-100 mb-8">
                 Start your journey to becoming a coding master today. Sign up for early access and get 3 months free!

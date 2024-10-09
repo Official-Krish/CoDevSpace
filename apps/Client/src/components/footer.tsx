@@ -12,9 +12,9 @@ export const Footer = () => {
                         <div>
                         <h3 className="text-lg font-semibold mb-4 text-white">Features</h3>
                         <ul className="space-y-2">
-                            <li><Link className="text-gray-400 hover:text-blue-400 text-sm" to="">Problem Solving</Link></li>
-                            <li><Link className="text-gray-400 hover:text-blue-400 text-sm" to="">Friend Challenges</Link></li>
-                            <li><Link className="text-gray-400 hover:text-blue-400 text-sm" to="">Real-time Collaboration</Link></li>
+                            <li><Link className="text-gray-400 hover:text-blue-400 text-sm" to="/problems">Problem Solving</Link></li>
+                            <li><Link className="text-gray-400 hover:text-blue-400 text-sm" to="/createContest">Friend Challenges</Link></li>
+                            <li><Link className="text-gray-400 hover:text-blue-400 text-sm" to="/create">Real-time Collaboration</Link></li>
                             <li><Link className="text-gray-400 hover:text-blue-400 text-sm" to="">AI Assistant</Link></li>
                         </ul>
                     </div>
