@@ -1,46 +1,70 @@
 import Cookies from "js-cookie";
 import { Code2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu"; 
+import { Button } from "./ui/button";
 
 export const AppBar = () => {
     const navigate = useNavigate();
     
-    return (
-        <div>
-            <header className="h-16 border-b border-gray-800 bg-gray-900 px-8">
-                <div className="flex justify-between items-center h-full">
-                    <div className="flex items-center">
-                        <Code2 className="h-6 w-6 mr-2 text-emerald-400" />
-                        <button className="font-bold text-emerald-400" onClick={() => navigate("/")}>
+    return ( 
+        <div className="bg-gray-900">
+            <header className="relative z-10 px-4 lg:px-8 py-4 text-gray-100">
+                <div className="container mx-auto flex justify-between items-center">
+                    <Link className="flex items-center space-x-2" to="">
+                        <Code2 className="h-8 w-8 text-blue-400" />
+                        <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">
                             CoDevSpace
-                        </button>
-                    </div>
-                    <nav className="flex gap-6 items-center">
-                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors text-white" onClick={() => navigate("/problems")}>
+                        </span>
+                    </Link>
+                    <nav className="hidden md:flex space-x-8">
+                        {!Cookies.get("token") && 
+                            <Link className="text-sm hover:text-blue-400 transition-colors" to="">
+                                Features
+                            </Link>
+                        }
+                        
+                        <Link className="text-sm hover:text-blue-400 transition-colors" to="/problems">
                             Problems
-                        </button>
-                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors text-white" onClick={() => navigate("/create")}>
-                            Create
-                        </button>
-                        <button className="text-sm font-medium hover:text-emerald-400 transition-colors text-white" onClick={() => navigate("/join")}>
-                            Join
-                        </button>
-                        {Cookies.get("token") ? (
-                            <div className="flex items-center">
-                                <UserDropdown />
+                        </Link>
+
+                        {Cookies.get("token") && 
+                            <div className="hidden md:flex space-x-8">
+                                <Link className="text-sm hover:text-blue-400 transition-colors" to="/create">
+                                    Collaborate
+                                </Link>
+                                <Link className="text-sm hover:text-blue-400 transition-colors" to="/create">
+                                    Join Room
+                                </Link>
+                                <Link className="text-sm hover:text-blue-400 transition-colors" to="/createContest">
+                                    Challenge
+                                </Link>
+                                <Link className="text-sm hover:text-blue-400 transition-colors" to="/joinContest">
+                                    Join Contest
+                                </Link>
                             </div>
-                        ) : (
-                            <div className="flex gap-4 text-white"> 
-                                <button className="text-sm font-medium hover:text-emerald-400 transition-colors" onClick={() => navigate("/signin")}>
-                                    Sign In
-                                </button>
-                                <button className="text-sm font-medium hover:text-emerald-400 transition-colors" onClick={() => navigate("/signup")}>
-                                    Sign Up
-                                </button>
+                        }
+
+                        {!Cookies.get("token") && 
+                            <div className="flex space-x-8">
+                                <Link className="text-sm hover:text-blue-400 transition-colors" to="">
+                                    Pricing
+                                </Link>
                             </div>
-                        )}
+                        }
+                        
                     </nav>
+                    {Cookies.get("token") ? (
+                        <div className="">
+                            <UserDropdown />
+                        </div>
+                    ) : (
+                        <div className="hidden md:flex space-x-8"> 
+                            <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate("/signin")}>Sign In</Button>
+                            <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => navigate("/signup")}>Sign Up</Button>
+                        </div>
+                    )}
+                    
                 </div>
             </header>
         </div>

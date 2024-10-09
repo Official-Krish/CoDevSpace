@@ -90,8 +90,8 @@ export default function CreateContest() {
       <div className="w-full max-w-4xl bg-gray-900 text-gray-100 rounded-lg shadow-lg overflow-hidden">
         <div className="md:flex">
           <div className="md:w-1/2 bg-gray-800 p-8 flex flex-col justify-center">
-            <h1 className="text-3xl font-bold text-emerald-400 mb-4">Create a New Room</h1>
-            <p className="text-gray-400 mb-6">Set up your collaborative coding environment in just a few steps.</p>
+            <h1 className="text-3xl font-bold text-emerald-400 mb-4">Create a New Contest</h1>
+            <p className="text-gray-400 mb-6">Challenge Your Friend</p>
             <ul className="space-y-2">
               <li className="flex items-center text-gray-300">
                 <Users className="h-5 w-5 mr-2 text-emerald-400" />

@@ -27,7 +27,7 @@ const JoinContest = () => {
                         <div className="w-full max-w-4xl">
                             <Card className="bg-gray-900 text-gray-100 border-gray-800">
                                 <CardHeader>
-                                    <CardTitle className="text-2xl font-bold text-center text-emerald-400">Join a Coding Session</CardTitle>
+                                    <CardTitle className="text-2xl font-bold text-center text-emerald-400">Join Contest</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="md:flex items-start space-y-6 md:space-y-0 md:space-x-6">
