@@ -8,6 +8,7 @@ import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { ArrowRight, Clock, Globe, Users } from 'lucide-react';
 import Draggable from 'react-draggable';
+import Cookies from 'js-cookie';
 
 const JoinRoom = () => {
   const navigate = useNavigate();
@@ -16,8 +17,13 @@ const JoinRoom = () => {
   const [localAudioTrack, setLocalAudioTrack] = useState<MediaStreamTrack | null>(null);
   const [localVideoTrack, setLocalVideoTrack] = useState<MediaStreamTrack | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-
   const [joined, setJoined] = useState(false);
+
+  useEffect(() => {
+    if(!Cookies.get("token")){
+      navigate("/Signin");
+    }
+  })
 
   const getCam = async () => {
       const stream = await window.navigator.mediaDevices.getUserMedia({

@@ -15,6 +15,7 @@ import {
 import axios from 'axios';
 import { BACKEND_URL } from '../../config';
 import { useUserStore } from '../store';
+import Cookies from 'js-cookie';
 
 export default function CreateContest() {
   const [roomName, setRoomName] = useState('');
@@ -85,6 +86,12 @@ export default function CreateContest() {
     fetchProblems();
   }, []);
 
+  useEffect(() => {
+    if(!Cookies.get("token")){
+      navigate("/Signin");
+    }
+  })
+
   return (
     <div className="bg-gray-950 min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-4xl bg-gray-900 text-gray-100 rounded-lg shadow-lg overflow-hidden">
@@ -137,21 +144,24 @@ export default function CreateContest() {
                   </Button>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="problem-select">Select Problem</Label>
-                <Select onValueChange={setProblemId}>
-                  <SelectTrigger className="w-full bg-gray-800 border-gray-700 text-gray-100 focus:border-emerald-400 focus:ring-emerald-400">
-                    <SelectValue placeholder="Select a problem" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700 text-gray-100">
-                    {problems.map((problem) => (
-                      <SelectItem key={problem.id} value={problem.id}>
-                        {problem.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {(roomName && roomId) && 
+                <div className="space-y-2">
+                  <Label htmlFor="problem-select">Select Problem</Label>
+                  <Select onValueChange={setProblemId}>
+                    <SelectTrigger className="w-full bg-gray-800 border-gray-700 text-gray-100 focus:border-emerald-400 focus:ring-emerald-400">
+                      <SelectValue placeholder="Select a problem" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-700 text-gray-100">
+                      {problems.map((problem) => (
+                        <SelectItem key={problem.id} value={problem.id}>
+                          {problem.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              }
+              
               {roomId === "" ? (
                 <Button
                   type="button"

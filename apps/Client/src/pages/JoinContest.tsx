@@ -7,12 +7,19 @@ import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { ArrowRight, Clock, Globe, Users } from 'lucide-react';
 import { ContestRoom } from './ContestRoom';
+import Cookies from 'js-cookie';
 
 const JoinContest = () => {
     const navigate = useNavigate();
     const {roomID} = useUserStore();
     const [roomId, setRoomId] = useState<string>(roomID);
     const [joined, setJoined ] = useState(false);
+
+    useEffect(() => {
+        if(!Cookies.get("token")){
+          navigate("/Signin");
+        }
+      })
 
     useEffect(() => {
         if (roomID !== "") setRoomId(roomID);

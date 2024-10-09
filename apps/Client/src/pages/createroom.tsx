@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 import {useUserStore} from '../store'
@@ -8,6 +8,7 @@ import { Label } from '../components/ui/label';
 import { Input } from '../components/ui/input';
 import { Switch } from '../components/ui/switch';
 import { Button } from '../components/ui/button';
+import Cookies from 'js-cookie';
 
 
 const CreateRoom: React.FC = () => {
@@ -16,11 +17,7 @@ const CreateRoom: React.FC = () => {
   const Navigate = useNavigate()
   const { setRoomID } = useUserStore();
   const [isPrivate, setIsPrivate] = useState(false)
-  // useEffect(()=>{
-  //   if(username==''){
-  //       Navigate("/auth")
-  //   }
-  // })
+  const navigate = useNavigate();
 
 
 
@@ -68,6 +65,12 @@ const CreateRoom: React.FC = () => {
       console.log(err)
     }
   };
+
+  useEffect(() => {
+    if(!Cookies.get("token")){
+      navigate("/Signin");
+    }
+  })
 
   return ( 
     <div className='bg-gray-950'>
