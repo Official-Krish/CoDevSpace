@@ -26,7 +26,7 @@ export default function CreateContest() {
   const [problems, setProblems] = useState<any[]>([]);
   const { setRoomID } = useUserStore();
   const [participants, setParticipants] = useState(2)
-  const [challengeType, setChallengeType] = useState('friends')
+  const [friends, setFriends] = useState(false)
 
   const copyRoomId = () => {
     navigator.clipboard.writeText(roomId);
@@ -38,8 +38,7 @@ export default function CreateContest() {
     setRoomId(newRoomId);
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = async () => {
     console.log("roomName", roomName);
     console.log("roomId", roomId);
     console.log("problemId", problemId);
@@ -51,19 +50,15 @@ export default function CreateContest() {
 
     let url = "http://localhost:3000";
     try {
-      const response = await fetch(`${url}/api/createContest`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          username: localStorage.getItem("name"),
-          roomName,
-          roomId,
-          problemId
-        })
+      const response = await axios.post(`${url}/api/createContest`, {
+        username: localStorage.getItem("name"),
+        roomName : roomName,
+        roomId:roomId,
+        problemId : problemId,
+        participantCount : participants,
+        friends : friends
       });
-      if (response.ok) {
+      if (response.status === 200) {
         setRoomID(roomId)
         localStorage.setItem("roomId", roomId);
         navigate("/joinContest");
@@ -104,7 +99,7 @@ export default function CreateContest() {
             Set up your coding challenge and invite friends or compete with coders worldwide. 
             Customize your contest settings below to create the perfect coding showdown!
           </p>
-          <form className="space-y-6">
+          <div className="space-y-6">
             <div>
               <Label htmlFor="contest-name">Contest Name</Label>
               <Input
@@ -162,10 +157,10 @@ export default function CreateContest() {
                   </Button>
                 ))}
               </div>
-            </div>
+            </div>  
             <div>
               <Label>Challenge Type</Label>
-              <RadioGroup value={challengeType} onValueChange={setChallengeType} className="flex space-x-4 mt-2">
+              <RadioGroup value={friends === true ? "world" : "friends"} onValueChange={() => { setFriends(!friends) }} className="flex space-x-4 mt-2">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="friends" id="friends" className='text-white'/>
                   <Label htmlFor="friends" className="flex items-center space-x-2 cursor-pointer">
@@ -184,16 +179,18 @@ export default function CreateContest() {
             </div>
             
             {roomId === "" ? (
-              <Button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white font-semibold px-6 py-6 rounded-full transition-all duration-300 transform hover:scale-105" onClick={handleGenerateRoomId}>
+              <Button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white font-semibold px-6 py-6 rounded-full transition-all duration-300 transform hover:scale-105" onClick={() => {
+                handleGenerateRoomId();
+                }}>
                 Genrate Contest ID
               </Button>)
               : (
-                <Button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white font-semibold px-6 py-6 rounded-full transition-all duration-300 transform hover:scale-105" onClick={() => handleSubmit}>
+                <Button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white font-semibold px-6 py-6 rounded-full transition-all duration-300 transform hover:scale-105" onClick={() => handleSubmit()}>
                   Create Contest
                 </Button>
               )
             }
-          </form>
+          </div>
         </div>
       </main>
     </div>
