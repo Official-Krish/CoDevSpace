@@ -10,6 +10,9 @@ interface RoomData {
         ws: WebSocket
     }>,
     problemId: string | null;
+    friends : boolean
+    participantCount : number
+    participantEntered : number
 }
 
 class ContestRoomManager {
@@ -26,13 +29,16 @@ class ContestRoomManager {
         return ContestRoomManager.instance;
     }
 
-    public async create({ username, roomId, roomName, problemId }: { username: string, roomName: string, roomId: string, problemId: string }) {
+    public async create({ username, roomId, roomName, problemId, friends, participantCount }: { username: string, roomName: string, roomId: string, problemId: string, friends : boolean, participantCount : number }) {
         const newRoom: RoomData = {
             roomId,
             roomName: roomName,
             host: username,
             users: [],
-            problemId: problemId, 
+            problemId: problemId,
+            friends : friends,
+            participantCount : participantCount,
+            participantEntered : 0
         };
         this.rooms.push(newRoom);
     }
@@ -42,7 +48,7 @@ class ContestRoomManager {
         roomId = Array.isArray(roomId) ? roomId[0] : roomId;
 
         const room = this.rooms.find(room => room.roomId === roomId);
-        if (!room) {
+        if (!room || room.users.length >= room.participantCount) {
                 const notFoundMessage = JSON.stringify({
                 Title : "Not-found"
             })
@@ -71,7 +77,12 @@ class ContestRoomManager {
         // Send a message to all other users in the room about the new user
         const newUserMessage = JSON.stringify({
             Title: "Contest-user-joined",
-            username
+            username,
+            users: room.users.map(user => {
+                user.username
+                user.userId
+            }),
+            particpantEntered : room.users.length
         });
     
         room.users.forEach(user => {
@@ -89,7 +100,10 @@ class ContestRoomManager {
                 user.userId
             }),
             roomName : room.roomName,
-            problemId : room.problemId
+            problemId : room.problemId,
+            friends : room.friends,
+            participantCount : room.participantCount,
+            participantEntered : room.users.length
         });
         ws.send(roomInfoMessage);
     }    

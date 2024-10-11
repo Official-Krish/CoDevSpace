@@ -94,9 +94,9 @@ app.post("/api/create", (req , res ) => {
 })
 
 app.post("/api/createContest", (req , res ) => {
-    const { username , roomName, roomId, problemId } = req.body;
+    const { username, roomName, roomId, problemId, friends, participantCount } = req.body;
 
-    if(!username || !roomName || !roomId || !problemId){
+    if(!username || !roomName || !roomId || !problemId || !participantCount){
         res.status(400).send("Invalid request");
         return;
     }
