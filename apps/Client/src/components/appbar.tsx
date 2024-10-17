@@ -33,7 +33,7 @@ export const AppBar = () => {
                                 <Link className="text-sm hover:text-blue-400 transition-colors" to="/create">
                                     Collaborate
                                 </Link>
-                                <Link className="text-sm hover:text-blue-400 transition-colors" to="/create">
+                                <Link className="text-sm hover:text-blue-400 transition-colors" to="/join">
                                     Join Room
                                 </Link>
                                 <Link className="text-sm hover:text-blue-400 transition-colors" to="/createContest">

@@ -1,13 +1,15 @@
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
-import { Code2 } from "lucide-react"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
+import { Code2, Eye, EyeOff } from "lucide-react"
 import axios from "axios"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { BACKEND_URL } from "../../config"
 import { useUserStore } from "../store"
+import { Progress } from "../components/ui/progress"
+import { Checkbox } from "../components/ui/checkbox"
 
 export default function SignUpPage() {
 
@@ -16,6 +18,9 @@ export default function SignUpPage() {
     const [email , setEmail] = useState<string>("");
     const [password , setPassword] = useState<string>("");
     const { setUsername } = useUserStore();
+    const [showPassword, setShowPassword] = useState(false)
+    const [agreedToTerms, setAgreedToTerms] = useState(false)
+    const [passwordStrength, setPasswordStrength] = useState(0)
 
     const signup = async({
         email,
@@ -47,54 +52,112 @@ export default function SignUpPage() {
         }
     }
 
+    const checkPasswordStrength = (password: string) => {
+        let strength = 0
+        if (password.length >= 8) strength += 25
+        if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 25
+        if (password.match(/\d/)) strength += 25
+        if (password.match(/[^a-zA-Z\d]/)) strength += 25
+        setPasswordStrength(strength)
+    }
+    
 
     return (
-        <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-            <Card className="w-full max-w-md bg-gray-900 text-gray-100 border-gray-800">
-                <CardHeader className="space-y-1 flex flex-col items-center">
-                <div className="flex items-center justify-center mb-4">
-                    <Code2 className="h-8 w-8 mr-2 text-emerald-400" />
-                    <span className="font-bold text-2xl text-emerald-400">CoDevSpace</span>
-                </div>
-                <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="email">Name</Label>
-                        <Input id="email" placeholder="Your Name" required type="Name" className="bg-gray-800 border-gray-700 text-gray-100 focus:border-emerald-400 focus:ring-emerald-400" onChange={(e) => {
-                            setName(e.target.value);
-                        }}/>
+        <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-4">
+            <Card className="w-full max-w-md bg-gray-800 text-gray-100">
+                <CardHeader className="space-y-1">
+                    <div className="flex items-center justify-center mb-4">
+                        <Code2 className="h-8 w-8 text-blue-400 mr-2" />
+                        <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">
+                        CoDevSpace
+                        </span>
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input id="email" placeholder="me@example.com" required type="email" className="bg-gray-800 border-gray-700 text-gray-100 focus:border-emerald-400 focus:ring-emerald-400" onChange={(e) => {
-                            setEmail(e.target.value);
-                        }}/>
+                    <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
+                    <CardDescription className="text-gray-400 text-center">
+                        Enter your details below to create your account and start coding
+                    </CardDescription>
+                    </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Full Name</Label>
+                            <Input
+                                id="name"
+                                placeholder="John Doe"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                                className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="m@example.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => {
+                                        setPassword(e.target.value)
+                                        checkPasswordStrength(e.target.value)
+                                    }}
+                                    required
+                                    className="bg-gray-700 border-gray-600 text-white pr-10"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-200"
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="h-5 w-5" />
+                                    ) : (
+                                        <Eye className="h-5 w-5" />
+                                    )}
+                                </button>
+                            </div>
+                            <Progress value={passwordStrength} className="h-2 mt-2" />
+                            <p className="text-sm text-gray-400 mt-1">
+                                Password strength: {passwordStrength === 100 ? "Strong" : passwordStrength >= 50 ? "Medium" : "Weak"}
+                            </p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Checkbox
+                                id="terms"
+                                checked={agreedToTerms}
+                                onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+                            />
+                            <Label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                I agree to the{" "}
+                                <Link to="/terms" className="text-blue-400 hover:text-blue-300">
+                                    terms of service
+                                </Link>
+                            </Label>
+                        </div>
+                        <Button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600" onClick={() => signup({email, password, name})}>
+                            Sign Up
+                        </Button>
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input id="password" required type="password" className="bg-gray-800 border-gray-700 text-gray-100 focus:border-emerald-400 focus:ring-emerald-400" onChange={(e) => {
-                            setPassword(e.target.value);
-                        }}/>
-                    </div>
-                    <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => {
-                        signup({
-                            email,
-                            password,
-                            name
-                        });
-                    }}>Sign up</Button>
                 </CardContent>
-                <CardFooter className="flex flex-col space-y-2">
-                    <div className="text-sm text-gray-400 text-center">
-                        Log in to your account?{" "}
-                        <button className="text-emerald-400 hover:underline" onClick={() => navigate("/signin")}>
-                            Sign in
-                        </button>
-                    </div>
-                    <button className="text-sm text-emerald-400 hover:underline text-center">
-                        Forgot your password?
-                    </button>
+                <CardFooter>
+                    <p className="text-sm text-gray-400 text-center w-full">
+                        Already have an account?{" "}
+                        <Link to="/signin" className="text-blue-400 hover:text-blue-300">
+                        Sign in
+                        </Link>
+                    </p>
                 </CardFooter>
             </Card>
         </div>
