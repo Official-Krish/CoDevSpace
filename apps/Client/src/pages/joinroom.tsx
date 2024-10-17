@@ -76,7 +76,7 @@ const JoinRoom = () => {
             <div className="w-full max-w-4xl">
               <Card className="bg-gray-900 text-gray-100 border-gray-800">
                 <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-center text-emerald-400">Join a Coding Session</CardTitle>
+                  <CardTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400 mb-4">Join a Coding Session</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="md:flex items-start space-y-6 md:space-y-0 md:space-x-6">
@@ -95,27 +95,27 @@ const JoinRoom = () => {
                             className="bg-gray-800 border-gray-700 text-gray-100 focus:border-emerald-400 focus:ring-emerald-400" 
                           />
                         </div>
-                        <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => {setJoined(true);}}>
+                        <Button type="submit" className="w-full mt-6 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white" onClick={() => {setJoined(true);}}>
                           Join Room <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                       </form>
                       <p className="mt-4 text-sm text-gray-400 text-center">
-                        Don't have a room ID? <div className="text-emerald-400 hover:underline cursor-pointer" onClick={() => navigate("/create")}>Create a new room</div>
+                        Don't have a room ID? <div className="text-blue-400 hover:underline cursor-pointer" onClick={() => navigate("/create")}>Create a new room</div>
                       </p>
                     </div>
                     <div className="md:w-1/2 bg-gray-800 p-6 rounded-lg">
-                      <h3 className="text-lg font-semibold mb-4 text-emerald-400">What to expect:</h3>
+                      <h3 className="text-lg font-semibold mb-4 text-blue-400">What to expect:</h3>
                       <ul className="space-y-3">
                         <li className="flex items-start">
-                          <Users className="h-5 w-5 mr-2 text-emerald-400 mt-0.5" />
+                          <Users className="h-5 w-5 mr-2 text-blue-400 mt-0.5" />
                           <span>Collaborate with team members in real-time</span>
                         </li>
                         <li className="flex items-start">
-                          <Clock className="h-5 w-5 mr-2 text-emerald-400 mt-0.5" />
+                          <Clock className="h-5 w-5 mr-2 text-blue-400 mt-0.5" />
                           <span>Instant code synchronization across all participants</span>
                         </li>
                         <li className="flex items-start">
-                          <Globe className="h-5 w-5 mr-2 text-emerald-400 mt-0.5" />
+                          <Globe className="h-5 w-5 mr-2 text-blue-400 mt-0.5" />
                           <span>Access your coding session from anywhere in the world</span>
                         </li>
                       </ul>
@@ -124,7 +124,7 @@ const JoinRoom = () => {
                 </CardContent>
                 <CardFooter className="flex justify-center">
                   <p className="text-sm text-gray-400 flex">
-                    By joining a room, you agree to our <button  className="text-emerald-400 hover:underline px-1 ">Terms of Service</button> and <button className="text-emerald-400 hover:underline px-1">Privacy Policy</button>
+                    By joining a room, you agree to our <button  className="text-blue-400 hover:underline px-1 ">Terms of Service</button> and <button className="text-blue-400 hover:underline px-1">Privacy Policy</button>
                   </p>
                 </CardFooter>
               </Card>

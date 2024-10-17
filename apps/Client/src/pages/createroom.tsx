@@ -31,9 +31,8 @@ const CreateRoom: React.FC = () => {
     setRoomId(newRoomId);
   };
 
-  const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async() => {
     console.log("Submit clicked!")
-    event.preventDefault();
     if(!roomId || !roomName){
         alert("Fill name and id")
         return;
@@ -72,27 +71,26 @@ const CreateRoom: React.FC = () => {
     }
   })
 
+
   return ( 
     <div className='bg-gray-950'>
-      <div className=' text-white'>
-      </div>
       <main className="flex-grow flex items-center justify-center p-4 bg-gray-900 min-h-screen">
         <div className="w-full max-w-4xl bg-gray-900 text-gray-100 rounded-lg shadow-lg overflow-hidden">
           <div className="md:flex">
             <div className="md:w-1/2 bg-gray-800 p-8 flex flex-col justify-center">
-              <h1 className="text-3xl font-bold text-emerald-400 mb-4">Create a New Room</h1>
+              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400 mb-4">Create a New Room</h1>
               <p className="text-gray-400 mb-6">Set up your collaborative coding environment in just a few steps.</p>
               <ul className="space-y-2">
                 <li className="flex items-center text-gray-300">
-                  <Users className="h-5 w-5 mr-2 text-emerald-400" />
+                  <Users className="h-5 w-5 mr-3 text-blue-400" />
                   Invite team members
                 </li>
                 <li className="flex items-center text-gray-300">
-                  <Lock className="h-5 w-5 mr-2 text-emerald-400" />
+                  <Lock className="h-5 w-5 mr-3 text-blue-400" />
                   Secure, private rooms
                 </li>
                 <li className="flex items-center text-gray-300">
-                  <Globe className="h-5 w-5 mr-2 text-emerald-400" />
+                  <Globe className="h-5 w-5 mr-3 text-blue-400" />
                   Code from anywhere
                 </li>
               </ul>
@@ -145,22 +143,21 @@ const CreateRoom: React.FC = () => {
                 </TabsContent>
               </Tabs>
               {roomId === "" ? 
-                <button
+                <Button
                   type="button"
                   onClick={handleGenerateRoomId}
-                  className="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg py-2"
+                  className="w-full mt-6 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white"
                 >
                   Generate Room ID
-                </button>
+                </Button>
               :
-                <button
+                <Button
                   type="button"
-                  // @ts-ignore
-                  onClick={handleSubmit}
-                  className="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg py-2"
+                  onClick={() => handleSubmit()}
+                  className="w-full mt-6 bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white"
                 >
                   Create Room
-                </button>
+                </Button>
               }
               
             </div>
