@@ -10,6 +10,7 @@ import ProblemsTable from './pages/Problems'
 import ProblemDetail from './pages/ProblemDetail'
 import CreateContest from './pages/CreateContest'
 import JoinContest from './pages/JoinContest'
+import ContestPage from './pages/Contest'
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
         <Route path='/problem/:id' element={<ProblemDetail />}></Route>
         <Route path='/createContest' element={<CreateContest />}></Route>
         <Route path='/joinContest' element={<JoinContest />}></Route>
+        <Route path='/Contests' element={<ContestPage />}></Route>
       </Routes>
     </>
   )

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 import { Copy, Globe, Users } from 'lucide-react';
@@ -26,7 +26,7 @@ export default function CreateContest() {
   const [problems, setProblems] = useState<any[]>([]);
   const { setRoomID } = useUserStore();
   const [participants, setParticipants] = useState(2)
-  const [friends, setFriends] = useState(false)
+  const [friends, setFriends] = useState(true)
 
   const copyRoomId = () => {
     navigator.clipboard.writeText(roomId);
@@ -160,7 +160,7 @@ export default function CreateContest() {
             </div>  
             <div>
               <Label>Challenge Type</Label>
-              <RadioGroup value={friends === true ? "world" : "friends"} onValueChange={() => { setFriends(!friends) }} className="flex space-x-4 mt-2">
+              <RadioGroup value={friends === true ? "friends" : "world"} onValueChange={() => { setFriends(!friends) }} className="flex space-x-4 mt-2">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="friends" id="friends" className='text-white'/>
                   <Label htmlFor="friends" className="flex items-center space-x-2 cursor-pointer">
