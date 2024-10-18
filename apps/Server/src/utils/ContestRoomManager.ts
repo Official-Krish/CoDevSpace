@@ -144,7 +144,17 @@ class ContestRoomManager {
         });
     }
     
-
+    public async getRooms() {
+        return this.rooms.filter(room => !room.friends).map(room => ({
+            roomId: room.roomId,
+            roomName: room.roomName,
+            host: room.host,
+            users: room.users.map(user => user.username),
+            problemId: room.problemId,
+            participantCount: room.participantCount,
+            participantEntered: room.participantEntered
+        }));
+    }
 }
 
 export { ContestRoomManager };
