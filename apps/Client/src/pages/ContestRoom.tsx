@@ -55,10 +55,12 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
             }
 
             if(parsedMessage.Title === "Contest-won"){
+                console.log("winner")
                 setContestWon(true);
             }
 
             if(parsedMessage.Title === "Contest-Loss"){
+                console.log("loser")
                 setContestLoss(true);
             }
             if(parsedMessage.Title === "Contest-user-joined"){
@@ -103,17 +105,6 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
         }
     }, [problemId]); 
 
-    if(contestWon || contestLoss){
-        useEffect(() => {
-            setTimeout(() => {
-                if (socket) {
-                    onLeave();
-                    socket.close();
-                    window.location.href = "/";
-                }
-            }, 5000);
-        }, []);
-    }
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -126,7 +117,7 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
     }, [usersCount, AllowedParticipants]);
 
     useEffect(() => {
-        if (isCancelled) {
+        if (isCancelled || contestLoss || contestWon) {
             const intervalId = setInterval(() => {
                 setCountdown((prevCountdown) => prevCountdown - 1);
             }, 1000);
@@ -138,7 +129,7 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
 
             return () => clearInterval(intervalId);
         }
-    }, [isCancelled, countdown]);
+    }, [isCancelled, countdown, contestLoss, contestWon]);
 
     return (
         <div>
@@ -175,7 +166,7 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
                 </div>
             }
         
-            {usersCount === AllowedParticipants && (
+            {usersCount === AllowedParticipants && !contestLoss && !contestWon && (
                 <div>
                     <div className="flex flex-col">
                         <main className="flex-1 py-8 md:py-12 grid md:grid-cols-2 gap-8 md:gap-12 px-2">
@@ -212,7 +203,7 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
                             <h2 className="text-2xl font-bold">You lost the contest. Better luck next time!</h2>
                         </div>
                     )}
-                    <p className="mt-4 text-gray-600">Redirecting to home page in 5 seconds...</p>
+                    <p className="mt-4 text-gray-600">Redirecting to home page in {countdown} seconds...</p>
                 </div>
             )}
 
