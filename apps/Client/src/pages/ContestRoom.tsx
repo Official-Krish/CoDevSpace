@@ -22,6 +22,9 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
     const [contestLoss, setContestLoss] = useState(false);
     let [usersCount, setUsersCount] = useState<number>();
     let [AllowedParticipants, setAllowedParticipants] = useState<number>();
+    const [isCancelled, setIsCancelled] = useState(false);
+    const [countdown, setCountdown] = useState(5);
+
 
     let participants: any[] = [];
 
@@ -39,6 +42,7 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
             };
             newSocket.send(JSON.stringify(msg));
         };
+
 
         newSocket.onmessage = (message) => {
             const parsedMessage = JSON.parse(message.data);
@@ -74,6 +78,16 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
         };
     }, [roomId]); 
 
+    const onLeave = () => {
+        const msg = {
+          Title : "UserLeft",
+          roomId,
+          userId : localStorage.getItem("userId")
+        }
+        socket?.send(JSON.stringify(msg))
+        navigate("/");
+    }
+
     useEffect(() => {
         if (problemId) {
             const fetchData = async () => {
@@ -93,6 +107,7 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
         useEffect(() => {
             setTimeout(() => {
                 if (socket) {
+                    onLeave();
                     socket.close();
                     window.location.href = "/";
                 }
@@ -100,9 +115,34 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
         }, []);
     }
 
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (usersCount !== AllowedParticipants) {
+                setIsCancelled(true);
+            }
+        }, 30000);
+
+        return () => clearTimeout(timeoutId);
+    }, [usersCount, AllowedParticipants]);
+
+    useEffect(() => {
+        if (isCancelled) {
+            const intervalId = setInterval(() => {
+                setCountdown((prevCountdown) => prevCountdown - 1);
+            }, 1000);
+
+            if (countdown === 0) {
+                onLeave();
+                window.location.href = "/";
+            }
+
+            return () => clearInterval(intervalId);
+        }
+    }, [isCancelled, countdown]);
+
     return (
         <div>
-            {usersCount !== AllowedParticipants &&
+            {usersCount !== AllowedParticipants && isCancelled === false &&
                 <div className="container mx-auto px-4 py-8">
                     <Card className="mb-8">
                         <CardHeader>
@@ -127,7 +167,7 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
                             </div>
                         </CardContent>
                         <div className="mt-8 text-center">
-                            <Button variant="outline" onClick={() => navigate("/")}>
+                            <Button variant="outline" onClick={() => onLeave()}>
                                 Leave Contest
                             </Button>
                         </div>
@@ -175,6 +215,18 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
                     <p className="mt-4 text-gray-600">Redirecting to home page in 5 seconds...</p>
                 </div>
             )}
+
+            {isCancelled && 
+                <div>
+                    <div className="text-center p-8">
+                        <div className="text-red-500 space-y-4">
+                            <AlertTriangle className="h-16 w-16 mx-auto" />
+                            <h2 className="text-2xl font-bold">Contest cancelled due to insufficient participants.</h2>
+                        </div>
+                        <p className="mt-4 text-gray-600">Redirecting to home page in {countdown} seconds...</p>
+                    </div>
+                </div>
+            }
 
         </div>
     )
