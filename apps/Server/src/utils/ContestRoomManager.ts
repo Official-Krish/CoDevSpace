@@ -155,6 +155,49 @@ class ContestRoomManager {
             participantEntered: room.participantEntered
         }));
     }
+
+    public async userLeft({ roomId, userId }: { roomId: string, userId: string }) {
+        const room = this.rooms.find(room => room.roomId === roomId);
+        
+        if (!room) {
+            return {
+                success: false,
+                message: "Room not found"
+            };
+        }
+    
+        const userIndex = room.users.findIndex(user => user.userId === userId);
+        if (userIndex === -1) {
+            return {
+                success: false,
+                message: "User not found in the room"
+            };
+        }
+    
+        const leavingUser = room.users.splice(userIndex, 1)[0];
+    
+        const leaveMessage = JSON.stringify({
+            Title: "Contest-user-left",
+            username: leavingUser.username,
+            participantEntered: room.users.length
+        });
+    
+        room.users.forEach(user => {
+            if (user.ws.readyState === WebSocket.OPEN) {
+                user.ws.send(leaveMessage);
+            }
+        });
+    
+        if (room.users.length === 0) {
+            this.rooms = this.rooms.filter(r => r.roomId !== roomId);
+        }
+
+        return {
+            success: true,
+            message: `${leavingUser.username} has left the room`
+        };
+    }
+    
 }
 
 export { ContestRoomManager };

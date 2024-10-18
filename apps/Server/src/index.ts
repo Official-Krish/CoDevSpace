@@ -49,27 +49,31 @@ wss.on('connection', function connection(ws) {
 
   ws.on('message', function message(data, isBinary) {
     const message = JSON.parse(data.toString());
-    if(message.Title==="User-joined"){
+    if(message.Title === "User-joined"){
       RoomManager.getInstance().handleUserJoined(message, ws);
     }
-    else if(message.Title==="User-left"){
+    else if(message.Title === "User-left"){
       RoomManager.getInstance().handleUserLeft(message)
     }
-    else if(message.Title==="New-chat"){
+    else if(message.Title === "New-chat"){
       RoomManager.getInstance().handleNewChat(message)
     }
-    else if(message.Title==="lang-change"){
+    else if(message.Title === "lang-change"){
       RoomManager.getInstance().handleLangChange(message)
     }
-    else if(message.Title==="Code-change"){
+    else if(message.Title === "Code-change"){
       RoomManager.getInstance().handleCodeChange(message)
     }
-    else if(message.Title==="Submitted"){
+    else if(message.Title === "Submitted"){
       RoomManager.getInstance().handleSubmitted(message)
     }
 
     else if (message.Title === "Join-Contest-Room"){
       ContestRoomManager.getInstance().handleUserJoined(message, ws);
+    }
+
+    else if (message.Title === "UserLeft"){
+      ContestRoomManager.getInstance().userLeft(message);
     }
   });
 
