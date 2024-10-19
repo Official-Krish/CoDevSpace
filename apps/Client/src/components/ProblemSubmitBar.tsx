@@ -148,6 +148,7 @@ function SubmitProblem({
         setTestcases(response.data.submission.testcases);
         {isContest && axios.post(`${BACKEND_URL}/api/v1/contest/poll`, {
           userId: localStorage.getItem("userId"),
+        },{
           withCredentials : true,
         }
         )}
@@ -174,6 +175,7 @@ function SubmitProblem({
         languageId: language,
         problemId: problem.id,
         userId: localStorage.getItem("userId"),
+      }, {
         withCredentials : true,
       });
       pollWithBackoff(response.data.id, 10, isContest);

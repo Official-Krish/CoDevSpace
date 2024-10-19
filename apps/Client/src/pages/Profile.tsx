@@ -83,6 +83,7 @@ export default function ProfilePage() {
   const handleSaveName = async() => {
     await axios.post(`${BACKEND_URL}/api/v1/user/updateName?id=${userId}`, {
       name: editedName,
+    }, {
       withCredentials: true,
     });
   }
@@ -90,6 +91,7 @@ export default function ProfilePage() {
   const handleSaveBio = async() => {
     await axios.post(`${BACKEND_URL}/api/v1/user/updateBio?id=${userId}`, {
       bio: editedBio,
+    }, {
       withCredentials: true,
     });
   }

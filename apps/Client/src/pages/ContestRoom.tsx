@@ -1,7 +1,7 @@
 import { ProblemStatement } from "../components/ProblemStatement";
 import SubmitBar from "../components/ProblemSubmitBar";
 import axios from "axios";
-import { BACKEND_URL } from "../../config";
+import { BACKEND_URL, ws_url } from "../../config";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { AlertTriangle, Loader2, Trophy, Users } from "lucide-react";
@@ -29,7 +29,6 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
     let participants: any[] = [];
 
     useEffect(() => {
-        const ws_url = "ws://localhost:3000";
         const newSocket = new WebSocket(ws_url);
 
         newSocket.onopen = () => {

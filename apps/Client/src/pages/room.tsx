@@ -20,7 +20,7 @@ import {
 import { Users, MessageSquare, Code2, ChevronDown, MicIcon, MicOffIcon, Video, VideoOff, Info, LogOut, Copy, LinkIcon, MessageCircleQuestion } from 'lucide-react'
 
 import { Socket, io } from "socket.io-client";
-import { BACKEND_URL, WEB_SOCKET_URL } from "../../config";
+import { BACKEND_URL, WEB_SOCKET_URL, ws_url } from "../../config";
 import Draggable from 'react-draggable';
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '../components/ui/drawer';
 import axios from 'axios';
@@ -73,8 +73,6 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
   //fire socket events on lang change, chat , code change, new user is done, add button leave user and copy room id
 
   useEffect(()=>{
-    let ws_url = "ws://localhost:3000"
-    console.log(ws_url);
     const newSocket = new WebSocket(ws_url);
     newSocket.onopen = () => {
       console.log('Connection established');

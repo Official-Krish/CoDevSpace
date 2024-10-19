@@ -48,15 +48,16 @@ export default function CreateContest() {
       return;
     }
 
-    let url = "http://localhost:3000";
     try {
-      const response = await axios.post(`${url}/api/createContest`, {
+      const response = await axios.post(`${BACKEND_URL}/api/v1/contest/createContest`, {
         username: localStorage.getItem("name"),
         roomName : roomName,
         roomId:roomId,
         problemId : problemId,
         participantCount : participants,
-        friends : friends
+        friends : friends,
+      }, {
+        withCredentials : true,
       });
       if (response.status === 200) {
         setRoomID(roomId)

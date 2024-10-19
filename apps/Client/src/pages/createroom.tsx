@@ -9,6 +9,8 @@ import { Input } from '../components/ui/input';
 import { Switch } from '../components/ui/switch';
 import { Button } from '../components/ui/button';
 import Cookies from 'js-cookie';
+import { BACKEND_URL } from '../../config';
+import axios from 'axios';
 
 
 const CreateRoom: React.FC = () => {
@@ -37,21 +39,15 @@ const CreateRoom: React.FC = () => {
         alert("Fill name and id")
         return;
     }
-    let url = "http://localhost:3000"
     try{
-      const response = await fetch(`${url}/api/create`,{
-        method:"POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            username : localStorage.getItem("name"),
-            roomName,
-            roomId
-        })
+      const response = await axios.post(`${BACKEND_URL}/api/create`,{
+        username : localStorage.getItem("name"),
+        roomName,
+        roomId,
+      }, {
+        withCredentials : true,
       })
-      if(response.ok){
-        //Add a toast here
+      if(response.status === 200){
         setRoomID(roomId)
         localStorage.setItem("roomId", roomId);
         Navigate("/join")
