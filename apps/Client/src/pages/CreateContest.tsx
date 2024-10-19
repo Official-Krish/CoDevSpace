@@ -75,7 +75,9 @@ export default function CreateContest() {
   useEffect(() => {
     async function fetchProblems() {
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/v1/problem/getProblems`);
+        const response = await axios.get(`${BACKEND_URL}/api/v1/problem/getProblems`, { 
+          withCredentials: true,
+        });
         setProblems(response.data);
       } catch (error) {
         console.error("Error fetching problems:", error);

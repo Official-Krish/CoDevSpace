@@ -12,7 +12,9 @@ const ProblemDetail = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const problem = await axios.get(`${BACKEND_URL}/api/v1/problem/getProblem/${id}`);
+            const problem = await axios.get(`${BACKEND_URL}/api/v1/problem/getProblem/${id}`, {
+                withCredentials: true
+            }) ;
             setProblem(problem.data);
             console.log("problemD", problemD);
         };

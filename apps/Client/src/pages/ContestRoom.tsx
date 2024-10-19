@@ -94,7 +94,9 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
         if (problemId) {
             const fetchData = async () => {
                 try {
-                    const response = await axios.get(`${BACKEND_URL}/api/v1/problem/getProblem/${problemId}`);
+                    const response = await axios.get(`${BACKEND_URL}/api/v1/problem/getProblem/${problemId}`, {
+                        withCredentials: true,
+                    });
                     setProblem(response.data);
                     console.log(response.data);
                 } catch (error) {
@@ -111,7 +113,7 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
             if (usersCount !== AllowedParticipants) {
                 setIsCancelled(true);
             }
-        }, 30000);
+        }, 300000);
 
         return () => clearTimeout(timeoutId);
     }, [usersCount, AllowedParticipants]);

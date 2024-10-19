@@ -409,7 +409,8 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
       const response = await axios.get(`${BACKEND_URL}/api/v1/getQustn`,{
         params:{
           slug: leetCodeLink.split("/problems/")[1].split("/")[0]
-        }
+        },
+        withCredentials: true,
       });
       const problemData = response.data;
 
@@ -656,7 +657,8 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
                     else{
                       const res = await axios.post(`${BACKEND_URL}/api/v1/AIchat`,{
                         chat: AIchat,
-                        code: code
+                        code: code,
+                        withCredentials: true
                       })
                       setAIchat("");
                       setAiResponse(res.data.response);

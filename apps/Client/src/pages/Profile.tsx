@@ -45,7 +45,9 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-    const Profile = await axios.get(`${BACKEND_URL}/api/v1/user/getDetails?id=${userId}`);
+    const Profile = await axios.get(`${BACKEND_URL}/api/v1/user/getDetails?id=${userId}`,{
+      withCredentials: true,
+    });
         
     const userProfile =  {
         name: Profile.data.name,
@@ -81,12 +83,14 @@ export default function ProfilePage() {
   const handleSaveName = async() => {
     await axios.post(`${BACKEND_URL}/api/v1/user/updateName?id=${userId}`, {
       name: editedName,
+      withCredentials: true,
     });
   }
 
   const handleSaveBio = async() => {
     await axios.post(`${BACKEND_URL}/api/v1/user/updateBio?id=${userId}`, {
       bio: editedBio,
+      withCredentials: true,
     });
   }
 

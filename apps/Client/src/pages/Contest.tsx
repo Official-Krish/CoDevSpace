@@ -25,7 +25,9 @@ export default function ContestPage() {
 
   useEffect(() => {
     const fetchContests = async () => {
-        const response = await axios.get(`${BACKEND_URL}/api/v1/contest/getContests`)
+        const response = await axios.get(`${BACKEND_URL}/api/v1/contest/getContests`, {
+          withCredentials : true,
+        })
         setContests(response.data)
     }
     fetchContests()

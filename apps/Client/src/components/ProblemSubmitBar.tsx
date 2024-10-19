@@ -78,7 +78,9 @@ function Submissions({ problem }: { problem: IProblem }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axios.get( `${BACKEND_URL}/api/v1/submission/bulk?problemId=${problem.id}`);
+      const response = await axios.get( `${BACKEND_URL}/api/v1/submission/bulk?problemId=${problem.id}`, {
+        withCredentials : true,
+      });
       setSubmissions(response.data.submissions || []);
     };
     fetchData();
@@ -129,7 +131,9 @@ function SubmitProblem({
       return;
     }
 
-    const response = await axios.get(`${BACKEND_URL}/api/v1/submission?id=${id}`);
+    const response = await axios.get(`${BACKEND_URL}/api/v1/submission?id=${id}`, {
+      withCredentials : true,
+    });
 
     console.log("pollWithBackoff", response.data.submission);
 
@@ -143,7 +147,8 @@ function SubmitProblem({
         setStatus(SubmitStatus.ACCEPTED);
         setTestcases(response.data.submission.testcases);
         {isContest && axios.post(`${BACKEND_URL}/api/v1/contest/poll`, {
-          userId: localStorage.getItem("userId")
+          userId: localStorage.getItem("userId"),
+          withCredentials : true,
         }
         )}
         toast.success("Accepted!");
@@ -169,6 +174,7 @@ function SubmitProblem({
         languageId: language,
         problemId: problem.id,
         userId: localStorage.getItem("userId"),
+        withCredentials : true,
       });
       pollWithBackoff(response.data.id, 10, isContest);
     } catch (e) {
