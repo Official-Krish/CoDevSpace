@@ -66,6 +66,7 @@ class ContestRoomManager {
                 Title: "Room-Info",
                 roomId,
                 users: room.users.map(user => user.username),
+                particpantEntered : room.users.length
             });
             ws.send(roomInfoMessage);
             return;
@@ -128,7 +129,7 @@ class ContestRoomManager {
                 console.error("Error sending message to the winning user:", error);
             }
         }
-    
+        
         const otherUsers = room.users.filter(user => user.userId !== userId);
     
         otherUsers.forEach(user => {

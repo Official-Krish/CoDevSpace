@@ -84,3 +84,51 @@ userRouter.post("/login", async (req, res) => {
     }
 });
 
+userRouter.get("/getDetails", async (req, res) => {
+    const userId = req.query.id?.toString();
+    try{
+        const user = await prisma.user.findFirst({
+            where: {
+                id: userId,
+            },
+            include: {
+                submissions: true
+            }
+        });
+        if (!user) {
+            return res.status(400).json({ msg: "User not found" });
+        } else {
+            return res.status(200).json(user);
+        }
+    } catch(e){
+        return res.status(400).json({ msg: "User not found" });
+    }
+});
+
+userRouter.post("/updateName", async (req, res) => {
+    const userId = req.query.id?.toString();
+    const body = req.body;
+    const user = await prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: {
+            name: body.name,
+        }
+    });
+    return res.status(200).json({ msg: "Name updated successfully" });
+});
+
+userRouter.post("/updateBio", async (req, res) => {
+    const userId = req.query.id?.toString();
+    const body = req.body;
+    const user = await prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: {
+            bio: body.bio,
+        }
+    });
+    return res.status(200).json({ msg: "Bio updated successfully" });
+});
