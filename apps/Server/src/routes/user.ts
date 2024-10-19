@@ -6,6 +6,7 @@ import { LoginSchema, SignupSchema } from "../types";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import  prisma  from '../utils/db';
+import { authMiddleware } from '../middleware';
 export const userRouter = Router();
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
@@ -84,7 +85,9 @@ userRouter.post("/login", async (req, res) => {
     }
 });
 
-userRouter.get("/getDetails", async (req, res) => {
+userRouter.use(authMiddleware);
+
+userRouter.get("/getDetails",async (req, res) => {
     const userId = req.query.id?.toString();
     try{
         const user = await prisma.user.findFirst({

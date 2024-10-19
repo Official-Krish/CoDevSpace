@@ -6,6 +6,7 @@ import { Router } from "express";
 import prisma from "../utils/db";
 import axios from "axios";
 import { getProblem } from "../lib/problem";
+import { authMiddleware } from '../middleware';
 
 export const SubmissionRouter = Router();
 
@@ -22,6 +23,8 @@ const LANGUAGE_MAPPING: Record<string, {
 };
 
 const JUDGE0_URL = process.env.JUDGE0_URL;
+
+SubmissionRouter.use(authMiddleware);
 
 SubmissionRouter.get("/", async (req, res) => {
   const { id } = req.query;

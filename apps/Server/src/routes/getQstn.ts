@@ -1,7 +1,10 @@
 import { Router } from "express";
 import axios from 'axios';
+import { authMiddleware } from "../middleware";
 
 export const qustnRouter = Router();
+
+qustnRouter.use(authMiddleware);
 
 qustnRouter.get("/", async (req, res) => {
     const slug = req.query.slug;

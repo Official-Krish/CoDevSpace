@@ -3,8 +3,11 @@ dotenv.config();
 
 import { Router } from "express";
 import { generateResponse } from "../utils/genAI";
+import { authMiddleware } from '../middleware';
 
 export const aiRouter = Router();
+
+aiRouter.use(authMiddleware);
 
 aiRouter.post("/", async (req, res) => {
     try {

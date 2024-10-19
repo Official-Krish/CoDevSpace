@@ -1,23 +1,26 @@
-import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: string | jwt.JwtPayload; 
+  }
+}
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
-    const token = req.cookies.token;
+  const token = req.cookies?.token;
 
-    if (!token) {
-        return res.status(401).json({ error: "Unauthorized" });
-    }
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized: Token not found" });
+  }
 
-    try {
-        const payload = jwt.verify(token, process.env.JWT_SECRET || "secret") as jwt.JwtPayload;
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET || "secret") as jwt.JwtPayload;
 
-        if (!payload.email) {
-            return res.status(401).json({ error: "Invalid token" });
-        }
-        // @ts-ignore
-        req.user = { email: payload.email };
-        next();
-    } catch (e) {
-        return res.status(401).json({ error: "Unauthorized" });
-    }
+    req.user = payload;
+
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: "Unauthorized: Invalid or expired token" });
+  }
 }

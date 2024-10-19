@@ -80,6 +80,15 @@ wss.on('connection', function connection(ws) {
   ws.send(JSON.stringify({Title : "Greet" , msg:'Hello! Message From Server!!'}));
 });
 
+
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/getQustn", qustnRouter);
+app.use("/api/v1/AIchat", aiRouter);
+app.use("/api/v1/problem", problemRouter);
+app.use("/api/v1/submission", SubmissionRouter)
+app.use("/api/v1/contest", ContestRouter);
+
+
 app.post("/api/create", (req , res ) => {
     const { username , roomName, roomId } = req.body;
 
@@ -115,11 +124,5 @@ app.post("/api/createContest", (req , res ) => {
 });
 
 
-app.use("/api/v1/user", userRouter);
-app.use("/api/v1/getQustn", qustnRouter);
-app.use("/api/v1/AIchat", aiRouter);
-app.use("/api/v1/problem", problemRouter);
-app.use("/api/v1/submission", SubmissionRouter)
-app.use("/api/v1/contest", ContestRouter);
 
 

@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { ContestRoomManager } from "../utils/ContestRoomManager";
+import { authMiddleware } from "../middleware";
 
 export const ContestRouter = Router();
+
+ContestRouter.use(authMiddleware);
 
 ContestRouter.post("/poll", (req, res) => {
     const { userId } = req.body; 
