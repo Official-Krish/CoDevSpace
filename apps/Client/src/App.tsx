@@ -11,6 +11,7 @@ import ProblemDetail from './pages/ProblemDetail'
 import CreateContest from './pages/CreateContest'
 import JoinContest from './pages/JoinContest'
 import ContestPage from './pages/Contest'
+import ProfilePage from './pages/Profile'
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
         <Route path='/createContest' element={<CreateContest />}></Route>
         <Route path='/joinContest' element={<JoinContest />}></Route>
         <Route path='/Contests' element={<ContestPage />}></Route>
+        <Route path='/profile' element={<ProfilePage />}></Route>
       </Routes>
     </>
   )

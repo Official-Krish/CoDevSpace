@@ -52,7 +52,7 @@ const JoinContest = () => {
                   <div className="mt-8 pt-6 border-t border-gray-700">
                     <h2 className="text-xl font-semibold mb-4">Don't have a contest ID?</h2>
                     <div className="space-y-4">
-                      <Button variant="outline" className="w-full bg-gray-700 text-white border-gray-600">
+                      <Button variant="outline" className="w-full bg-gray-700 text-white border-gray-600" onClick={() => navigate("/Contests")}>
                         <Users className="mr-2 h-4 w-4" />
                         Browse Public Contests
                       </Button>

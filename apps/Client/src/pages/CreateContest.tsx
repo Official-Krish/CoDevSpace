@@ -92,7 +92,7 @@ export default function CreateContest() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col items-center">
-      <main className="container mx-auto px-4 py-8 flex flex-col items-center mt-4">
+      <main className="container mx-auto px-4 py-8 flex flex-col items-center">
         <div className="w-full max-w-2xl bg-gray-800 border border-gray-700 rounded-lg shadow-lg p-8">
           <h1 className="text-3xl font-bold mb-4 text-center">Create a New Contest</h1>
           <p className="text-gray-400 mb-8 text-center max-w-2xl">

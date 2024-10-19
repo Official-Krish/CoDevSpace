@@ -19,8 +19,8 @@ export function Problems() {
     }, []);
 
     return (
-        <section className=" py-8 md:py-22">
-            <div className="container mx-auto px-4 md:px-6">
+        <section className="py-8 md:py-22 min-h-screen">
+            <div className="container mx-auto px-4 md:px-6 ">
                 <div className="mb-6">
                     <h2 className="text-2xl font-bold mb-2">Problems</h2>
                     <p className="text-gray-500 dark:text-gray-400">
