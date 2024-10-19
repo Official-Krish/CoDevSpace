@@ -75,17 +75,17 @@ const UserDropdown = () => {
                 <Avatar />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-[180px] bg-gray-800 border-gray-600">
-                <DropdownMenuItem className="text-white">
-                    <button className="flex items-center gap-2">
+                <DropdownMenuItem className="text-white cursor-pointer">
+                    <Link className="flex items-center gap-2" to={`/profile?id=${localStorage.getItem("userId")}`}>
                         <span>Profile</span>
-                    </button>
+                    </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-white">
+                <DropdownMenuItem className="text-white cursor-pointer">
                     <button className="flex items-center gap-2 ">
                         <span>Settings</span>
                     </button>
                 </DropdownMenuItem>
-                <DropdownMenuItem  className="text-white" onClick={() => {
+                <DropdownMenuItem  className="text-white cursor-pointer" onClick={() => {
                     Cookies.remove("token");
                     localStorage.removeItem("name");
                     window.location.reload();
