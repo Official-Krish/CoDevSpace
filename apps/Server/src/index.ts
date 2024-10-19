@@ -11,6 +11,7 @@ import { problemRouter } from './routes/getProblem';
 import { SubmissionRouter } from './routes/Submission';
 import { ContestRoomManager } from './utils/ContestRoomManager';
 import { ContestRouter } from './routes/contest';
+import { authMiddleware } from './middleware';
 
 const app = express();
 app.use(express.json());
@@ -89,7 +90,7 @@ app.use("/api/v1/submission", SubmissionRouter)
 app.use("/api/v1/contest", ContestRouter);
 
 
-app.post("/api/create", (req , res ) => {
+app.post("/api/create", authMiddleware, (req , res ) => {
     const { username , roomName, roomId } = req.body;
 
     if(!username || !roomName || !roomId){
@@ -106,22 +107,6 @@ app.post("/api/create", (req , res ) => {
     }
 })
 
-app.post("/api/createContest", (req , res ) => {
-    const { username, roomName, roomId, problemId, friends, participantCount } = req.body;
-
-    if(!username || !roomName || !roomId || !problemId || !participantCount){
-        res.status(400).send("Invalid request");
-        return;
-    }
-
-    try{
-        ContestRoomManager.getInstance().create(req.body);
-        res.status(200).send("Room created");
-        console.log("Room created");
-    } catch(e){
-        res.status(500).send("Error creating room");
-    }
-});
 
 
 

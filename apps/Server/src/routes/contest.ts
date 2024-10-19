@@ -18,6 +18,23 @@ ContestRouter.post("/poll", (req, res) => {
     res.status(200).send("Poll request processed for userId: " + userId);
 });
 
+ContestRouter.post("/createContest", (req , res ) => {
+    const { username, roomName, roomId, problemId, friends, participantCount } = req.body;
+
+    if(!username || !roomName || !roomId || !problemId || !participantCount){
+        res.status(400).send("Invalid request");
+        return;
+    }
+
+    try{
+        ContestRoomManager.getInstance().create(req.body);
+        res.status(200).send("Room created");
+        console.log("Room created");
+    } catch(e){
+        res.status(500).send("Error creating room");
+    }
+});
+
 ContestRouter.get("/getContests", async ( req, res ) => {
     try{
         const rooms = await ContestRoomManager.getInstance().getRooms();
