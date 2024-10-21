@@ -34,7 +34,7 @@ export default function SignInPage() {
             console.log("User logged in successfully");
             localStorage.setItem("name", handleSubmit.data.name);
             localStorage.setItem("userId", handleSubmit.data.userId)
-            navigate("/create")
+            navigate("/")
         }
         else{
             console.log("User creation failed");
