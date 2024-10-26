@@ -144,7 +144,7 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
                         <CardHeader>
                             <CardTitle className="flex justify-between items-center">
                                 <span>Contest Room: {roomId}</span>
-                                <div>{usersCount} and {AllowedParticipants}</div>
+                                <div>{usersCount} of {AllowedParticipants}</div>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
