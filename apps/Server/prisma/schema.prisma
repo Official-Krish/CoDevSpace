@@ -20,6 +20,7 @@ model User {
   bio       String?  @default("Coder")
   password  String
   Contest_Points Int @default(100)
+  Total_Contests Int @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   submissions        Submission[]

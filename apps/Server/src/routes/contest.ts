@@ -69,7 +69,8 @@ ContestRouter.post("/winner", async (req, res) => {
                 id: userId
             },
             data: {
-                Contest_Points: user.Contest_Points + 10
+                Contest_Points: user.Contest_Points + 10,
+                Total_Contests: user.Total_Contests + 1
             }
         });
 
@@ -103,7 +104,8 @@ ContestRouter.post("/lost", async (req, res) => {
                 id: userId
             },
             data: {
-                Contest_Points: user.Contest_Points - 5
+                Contest_Points: user.Contest_Points - 5,
+                Total_Contests: user.Total_Contests + 1
             }
         });
 
