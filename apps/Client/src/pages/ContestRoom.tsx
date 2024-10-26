@@ -24,6 +24,7 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
     let [AllowedParticipants, setAllowedParticipants] = useState<number>();
     const [isCancelled, setIsCancelled] = useState(false);
     const [countdown, setCountdown] = useState(5);
+    const [friends, setFriends] = useState(false);
 
 
     let participants: any[] = [];
@@ -43,7 +44,7 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
         };
 
 
-        newSocket.onmessage = (message) => {
+        newSocket.onmessage = async (message) => {
             const parsedMessage = JSON.parse(message.data);
             if (parsedMessage.Title === "Room-Info") {
                 setUsers(parsedMessage.users);
@@ -51,15 +52,18 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
                 setAllowedParticipants(parsedMessage.participantCount);
                 setUsersCount(parsedMessage.participantEntered);
                 participants = parsedMessage.users;
+                setFriends(parsedMessage.friends);
             }
 
             if(parsedMessage.Title === "Contest-won"){
                 console.log("winner")
+                friends === false && await contestWinner();
                 setContestWon(true);
             }
 
             if(parsedMessage.Title === "Contest-Loss"){
-                console.log("loser")
+                console.log("loser");
+                friends === false && await contestLoser();
                 setContestLoss(true);
             }
             if(parsedMessage.Title === "Contest-user-joined"){
@@ -223,3 +227,29 @@ export const ContestRoom = ({ roomId }: { roomId: string }) => {
         </div>
     )
 };
+
+async function contestWinner(){
+    try{
+        await axios.post(`${BACKEND_URL}/api/v1/contest/winner`, {
+            userId: localStorage.getItem("userId")
+        }, {
+            withCredentials: true
+        });
+    } catch(e){
+        console.log(e);
+        console.log("Something went wrong");
+    }
+}
+
+async function contestLoser(){
+    try{
+        await axios.post(`${BACKEND_URL}/api/v1/contest/loser`, {
+            userId: localStorage.getItem("userId")
+        }, {
+            withCredentials: true
+        });
+    } catch(e){
+        console.log(e);
+        console.log("Something went wrong");    
+    }
+}
