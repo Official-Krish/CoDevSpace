@@ -1,8 +1,21 @@
 import React from "react";
-import { CameraIcon, EllipsisVertical } from "lucide-react";
+import { CameraIcon, EllipsisVertical, Presentation } from "lucide-react";
 import { toJpeg } from "html-to-image";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+import { Excalidraw } from "@excalidraw/excalidraw";
+
+function ExcaliDrawInt () {
+    console.log("clicked")
+    return (
+      <>
+        <h1 style={{ textAlign: "center" }}>Excalidraw Example</h1>
+        <div style={{ height: "500px" }}>
+          <Excalidraw />
+        </div>
+      </>
+    );
+}
 
 export default function CodeSnippet({
   reff,
@@ -46,11 +59,20 @@ export const RoomDropDown = ({reff} : {reff: React.RefObject<HTMLDivElement>}) =
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-slate-800 border-gray-600 rounded-md shadow-lg py-2 pr-[-10px] pl-2">
                 <DropdownMenuItem>
-                    <div className="text-white pl-1 flex">
+                    <div className="text-white pl-1 flex pt-2">
                         <CodeSnippet reff={reff} />
                     </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={ExcaliDrawInt}>
+                    <button className="flex pt-2 cursor-pointer hover:text-gray-400">
+                        <Presentation className="text-white pl-1 hover:text-gray-400"/>
+                        <div className="pl-2 pr-1 font-semibold text-md text-white hover:text-gray-400">
+                            Board
+                        </div>
+                    </button>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )
 }
+

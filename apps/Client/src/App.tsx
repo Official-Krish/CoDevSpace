@@ -12,6 +12,7 @@ import CreateContest from './pages/CreateContest'
 import JoinContest from './pages/JoinContest'
 import ContestPage from './pages/Contest'
 import ProfilePage from './pages/Profile'
+import LeaderboardPage from './pages/ContestLeaderboard'
 
 function App() {
 
@@ -29,6 +30,7 @@ function App() {
         <Route path='/joinContest' element={<JoinContest />}></Route>
         <Route path='/Contests' element={<ContestPage />}></Route>
         <Route path='/profile' element={<ProfilePage />}></Route>
+        <Route path='/leaderboard' element={<LeaderboardPage />}></Route>
       </Routes>
     </>
   )

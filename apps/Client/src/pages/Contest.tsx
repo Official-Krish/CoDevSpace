@@ -3,7 +3,7 @@ import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
-import { Users, Clock, Search, PlusCircle } from "lucide-react"
+import { Users, Clock, Search, PlusCircle, Trophy } from "lucide-react"
 import { Badge } from "../components/ui/badge"
 import { useNavigate } from "react-router-dom"
 import { useUserStore } from "../store"
@@ -62,6 +62,9 @@ export default function ContestPage() {
                 </Button>
                 <Button className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600" onClick={() => navigate("/joinContest")}>
                     <PlusCircle className="mr-2 h-4 w-4" /> Join Contest
+                </Button>
+                <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600" onClick={() => navigate("/leaderboard")}>
+                    <Trophy className="mr-2 h-4 w-4" /> Leaderboard
                 </Button>
             </div>
         </div>
