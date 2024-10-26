@@ -16,9 +16,10 @@ datasource db {
 model User {
   id                 String              @id @default(cuid())
   email     String   @unique
-  name      String?
-  bio       String?   @default("Coder")
+  name      String?  
+  bio       String?  @default("Coder")
   password  String
+  Contest_Points Int @default(100)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   submissions        Submission[]

@@ -66,7 +66,8 @@ class ContestRoomManager {
                 Title: "Room-Info",
                 roomId,
                 users: room.users.map(user => user.username),
-                particpantEntered : room.users.length
+                particpantEntered : room.users.length,
+                friends : room.friends,
             });
             ws.send(roomInfoMessage);
             return;
@@ -83,7 +84,7 @@ class ContestRoomManager {
                 user.username
                 user.userId
             }),
-            particpantEntered : room.users.length
+            particpantEntered : room.users.length,
         });
     
         room.users.forEach(user => {
@@ -104,7 +105,7 @@ class ContestRoomManager {
             problemId : room.problemId,
             friends : room.friends,
             participantCount : room.participantCount,
-            participantEntered : room.users.length
+            participantEntered : room.users.length,
         });
         ws.send(roomInfoMessage);
     }    

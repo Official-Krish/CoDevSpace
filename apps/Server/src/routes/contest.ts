@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { ContestRoomManager } from "../utils/ContestRoomManager";
 import { authMiddleware } from "../middleware";
+import prisma from "../utils/db";
 
 export const ContestRouter = Router();
 
@@ -43,3 +44,89 @@ ContestRouter.get("/getContests", async ( req, res ) => {
         res.json(e);
     }
 }) 
+
+ContestRouter.post("/winner", async (req, res) => {
+    const { userId } = req.body;
+    
+    if (!userId) {
+        console.error("No userId provided");
+        return res.status(400).send("User ID is required."); 
+    }
+    try{
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            }
+        });
+
+        if(!user){
+            res.status(400).send("Invalid user");
+            return;
+        }
+
+        const updateParticipant = await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                Contest_Points: user.Contest_Points + 10
+            }
+        });
+
+        res.status(200).json(updateParticipant);
+    } catch(e){
+        res.status(500).send("Error declaring winner");
+    }
+})
+
+ContestRouter.post("/lost", async (req, res) => {
+    const { userId } = req.body;
+    
+    if (!userId) {
+        console.error("No userId provided");
+        return res.status(400).send("User ID is required."); 
+    }
+    try{
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            }
+        });
+
+        if(!user){
+            res.status(400).send("Invalid user");
+            return;
+        }
+
+        const updateParticipant = await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                Contest_Points: user.Contest_Points - 5
+            }
+        });
+
+        res.status(200).json(updateParticipant);
+    } catch(e){
+        res.status(500).send("Error declaring loser");
+    }
+})
+
+ContestRouter.get("/getLeaderboard", async (req, res) => {
+    try{
+        const leaderboard = await prisma.user.findMany({
+            select: {
+                name: true,
+                Contest_Points: true
+            },
+            orderBy: {
+                Contest_Points: "desc"
+            }
+        });
+
+        res.json(leaderboard);
+    } catch(e){
+        res.status(500).send("Error fetching leaderboard");
+    }
+})
