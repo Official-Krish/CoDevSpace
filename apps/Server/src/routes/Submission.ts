@@ -3,7 +3,7 @@ dotenv.config();
 
 
 import { Router } from "express";
-import prisma from "../utils/db";
+import { prisma } from "../utils/db";
 import axios from "axios";
 import { getProblem } from "../lib/problem";
 import { authMiddleware } from '../middleware';

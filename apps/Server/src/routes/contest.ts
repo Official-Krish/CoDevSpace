@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { ContestRoomManager } from "../utils/ContestRoomManager";
 import { authMiddleware } from "../middleware";
-import prisma from "../utils/db";
+import { prisma } from "../utils/db";
 
 export const ContestRouter = Router();
 
@@ -120,7 +120,8 @@ ContestRouter.get("/getLeaderboard", async (req, res) => {
         const leaderboard = await prisma.user.findMany({
             select: {
                 name: true,
-                Contest_Points: true
+                Contest_Points: true,
+                Total_Contests: true,
             },
             orderBy: {
                 Contest_Points: "desc"

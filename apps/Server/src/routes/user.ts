@@ -5,7 +5,7 @@ import { Router } from "express";
 import { LoginSchema, SignupSchema } from "../types";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import  prisma  from '../utils/db';
+import  { prisma }  from '../utils/db';
 import { authMiddleware } from '../middleware';
 export const userRouter = Router();
 
