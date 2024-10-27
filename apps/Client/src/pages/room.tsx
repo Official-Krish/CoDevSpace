@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import {useUserStore} from '../store'
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
@@ -39,7 +38,6 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
   name: string;
 }) => {
   window.history.pushState(null, '', '/room');
-  const Navigate = useNavigate();
   const languages = ['JavaScript', 'Python', 'Java', 'C++', 'TypeScript']
   const [msg, setmsg] = useState("");
 
@@ -88,6 +86,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
       console.log('Message received:', parsedMessage);
       if (parsedMessage.Title === "Room-Info") {
         setUsers(parsedMessage.users);
+        console.log("users",parsedMessage.users);
         setCode(parsedMessage.code);
         setLanguage(parsedMessage.language);
         setResult(parsedMessage.result);
@@ -96,7 +95,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
       } 
       else if(parsedMessage.Title === "Not-found"){
         alert("No room found")
-        Navigate("/join")
+        window.location.href = "/join"
       }
       else if (parsedMessage.Title === "New-User") {
         toast.success(`${parsedMessage.username} joined` )
@@ -159,6 +158,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
   };
 
   const onLeave = () => {
+    console.log("leaving room")
     //fire websocket event
     const msg = {
       Title : "User-left",
@@ -168,7 +168,7 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
     socket?.send(JSON.stringify(msg))
     setRoomID("")
     localStorage.setItem("roomId", "");
-    Navigate("/join");
+    window.location.href = "/join"
   }
 
   const handleCodeChange = (val:string) => {
@@ -680,7 +680,9 @@ export const Room = ({ localAudioTrack, localVideoTrack, name } : {
               <Button className="bg-gray-900 text-white hover:bg-gray-700">
                 {micEnabled ? <MicIcon className="h-5 w-5" onClick={() => setMicEnabled(false)}/> : <MicOffIcon className="h-5 w-5" onClick={() => setMicEnabled(true)}/>}
               </Button>
-              <Button onClick={onLeave} className="bg-red-600 hover:bg-red-700 flex items-center justify-center"> 
+              <Button onClick={() => {
+                onLeave()
+              }} className="bg-red-600 hover:bg-red-700 flex items-center justify-center"> 
                 Leave
               </Button>
             </div>
