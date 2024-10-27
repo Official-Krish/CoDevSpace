@@ -54,7 +54,7 @@ wss.on('connection', function connection(ws) {
       RoomManager.getInstance().handleUserJoined(message, ws);
     }
     else if(message.Title === "User-left"){
-      RoomManager.getInstance().handleUserLeft(message)
+      RoomManager.getInstance().onLeave(message)
     }
     else if(message.Title === "New-chat"){
       RoomManager.getInstance().handleNewChat(message)

@@ -116,34 +116,8 @@ export class RoomManager {
       language: room.language,
       result: room.result
     });
+    console.log("roomInfoMessage",roomInfoMessage);
     ws.send(roomInfoMessage);
-  }
-
-
-  public handleUserLeft(message: any) {
-    const { roomId, username } = message;
-  
-    // Find the room based on roomId
-    const room = this.rooms.find(room => room.roomId === roomId);
-    if (!room) {
-      return;
-    }
-  
-    // Remove the user from the room
-    room.users = room.users.filter(user => user.username !== username);
-  
-    // Notify remaining users in the room
-    const userLeftMessage = JSON.stringify({
-      Title: "User-left",
-      username,
-      users: room.users.map(user => user.username)
-    });
-  
-    room.users.forEach(user => {
-      if (user.ws.readyState === WebSocket.OPEN) {
-        user.ws.send(userLeftMessage);
-      }
-    });
   }
 
   public handleNewChat(message:any){
@@ -272,4 +246,31 @@ export class RoomManager {
     });
   }
 
+  public onLeave(message : any) {
+    const { roomId, username } = message;
+    const room = this.rooms.find(room => room.roomId === roomId);
+    if (!room) {
+      return;
+    }
+    
+    if(room.users.length === 1){
+      this.rooms = this.rooms.filter(room => room.roomId !== roomId);
+      return;
+    }
+    // Remove the user from the room
+    room.users = room.users.filter(user => user.username !== username);
+  
+    // Notify remaining users in the room
+    const userLeftMessage = JSON.stringify({
+      Title: "User-left",
+      username,
+      users: room.users.map(user => user.username)
+    });
+  
+    room.users.forEach(user => {
+      if (user.ws.readyState === WebSocket.OPEN) {
+        user.ws.send(userLeftMessage);
+      }
+    });
+  }
 }
